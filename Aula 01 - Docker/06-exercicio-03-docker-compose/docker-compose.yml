@@ -1,0 +1,34 @@
+# =============================================================================
+# docker-compose.yml — orquestrando containers com um único arquivo
+# =============================================================================
+# O Docker Compose permite descrever, em um único arquivo YAML, um ou
+# mais containers (chamados de "services") que devem subir juntos,
+# com suas portas, imagens, volumes e redes já configurados.
+#
+# Em vez de digitar vários "docker run" longos e repetitivos, com
+# múltiplas flags, descrevemos tudo aqui uma única vez.
+# =============================================================================
+
+version: "3"
+
+services:
+
+  # Nome do serviço (pode ser qualquer nome — usamos "web" aqui).
+  # Esse nome também funciona como "hostname" para outros serviços
+  # se comunicarem com este container dentro da mesma rede do Compose.
+  web:
+
+    # Mesma ideia do "docker run nginx": qual imagem usar para este
+    # serviço. Poderíamos trocar por "build: ." para usar um Dockerfile
+    # local em vez de uma imagem pronta do Docker Hub.
+    image: nginx
+
+    # Equivale à flag "-p" do "docker run": mapeia a porta 8080 da
+    # máquina host para a porta 80 dentro do container.
+    ports:
+      - "8080:80"
+
+# -----------------------------------------------------------------------------
+# Para executar:  docker compose up
+# Para parar:     docker compose down
+# -----------------------------------------------------------------------------

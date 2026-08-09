@@ -1,0 +1,13 @@
+{
+  "name": "api-node-mysql",
+  "version": "1.0.0",
+  "description": "API de exemplo em Node.js conectada a um banco MySQL, usada na aula de Docker",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.9.7"
+  }
+}

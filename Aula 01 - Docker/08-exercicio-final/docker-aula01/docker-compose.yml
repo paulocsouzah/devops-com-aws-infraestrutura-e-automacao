@@ -1,0 +1,72 @@
+# =============================================================================
+# docker-compose.yml do projeto final (docker-aula01)
+# =============================================================================
+# Aqui juntamos os TRÊS serviços praticados ao longo da aula:
+#   - web: nginx + imagem própria (Dockerfile), igual ao módulo 05
+#   - api: Node.js, reaproveitada do módulo 07
+#   - db:  MySQL, reaproveitado do módulo 07
+# O objetivo deste arquivo é mostrar, em um só lugar, que tudo o que
+# foi praticado isoladamente se encaixa em um único ambiente.
+# =============================================================================
+
+version: "3.8"
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Serviço web: site institucional em nginx, construído com Dockerfile
+  # próprio (build: .), igual ao módulo 05.
+  # ---------------------------------------------------------------------------
+  web:
+    build: .
+    image: docker-aula01-web
+    ports:
+      - "8082:80"
+
+  # ---------------------------------------------------------------------------
+  # Serviço api: mesma API Node.js do módulo 07, construída a partir do
+  # Dockerfile da pasta ./api.
+  # ---------------------------------------------------------------------------
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: aula_docker
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Serviço db: MySQL com volume persistente e script de inicialização,
+  # igual ao módulo 07 — só a porta do host muda (3307 em vez de 3306)
+  # para não colidir caso o ambiente do módulo 07 ainda esteja de pé.
+  # ---------------------------------------------------------------------------
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aula_docker
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./api/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:
+
+# -----------------------------------------------------------------------------
+# Para executar:  docker compose up -d --build
+# Para parar:     docker compose down
+# Para parar E apagar os dados do banco:  docker compose down -v
+# -----------------------------------------------------------------------------

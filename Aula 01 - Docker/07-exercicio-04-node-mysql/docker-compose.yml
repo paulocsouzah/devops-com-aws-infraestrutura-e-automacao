@@ -1,0 +1,117 @@
+# =============================================================================
+# docker-compose.yml — API Node.js + MySQL
+# =============================================================================
+# Aqui juntamos DOIS serviços que precisam conversar entre si: uma API
+# em Node.js e um banco de dados MySQL. É o cenário real que motivou o
+# Docker Compose — muito mais prático do que rodar "docker run" duas
+# vezes e configurar rede/volume manualmente.
+# =============================================================================
+
+version: "3.8"
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Serviço da API (Node.js)
+  # ---------------------------------------------------------------------------
+  api:
+    # Em vez de usar uma imagem pronta, construímos a partir do
+    # Dockerfile que está na pasta ./api
+    build: ./api
+
+    # Mapeia a porta 3000 do host para a porta 3000 do container,
+    # onde o Express está escutando.
+    ports:
+      - "3000:3000"
+
+    # Variáveis de ambiente lidas pelo index.js (veja dbConfig no
+    # código) para montar a conexão com o MySQL. Note que DB_HOST usa
+    # o NOME DO SERVIÇO do banco ("db") — dentro da rede interna do
+    # Compose, cada serviço enxerga os outros pelo próprio nome, como
+    # um DNS interno.
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: aula_docker
+
+    # "depends_on" com "condition: service_healthy" garante que a API
+    # só inicia DEPOIS que o MySQL responder como saudável (ver
+    # "healthcheck" no serviço "db" abaixo). Sem isso, a API poderia
+    # subir antes do banco estar pronto para aceitar conexões e falhar
+    # na primeira consulta.
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - app-network
+
+  # ---------------------------------------------------------------------------
+  # Serviço do banco de dados (MySQL)
+  # ---------------------------------------------------------------------------
+  db:
+    image: mysql:8
+
+    # Reinicia o container automaticamente caso ele pare de forma
+    # inesperada (ex: após um "docker restart" da máquina host).
+    restart: always
+
+    # Variáveis de ambiente reconhecidas pela imagem oficial do MySQL
+    # para configurar a senha do root e criar um banco inicial.
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aula_docker
+
+    # Expor a porta 3306 é opcional (só necessário se você quiser
+    # conectar no banco a partir do HOST, com um cliente MySQL local,
+    # por exemplo). A API se conecta pela rede interna do Compose e
+    # não depende dessa porta estar publicada.
+    ports:
+      - "3306:3306"
+
+    volumes:
+      # Volume nomeado: persiste os dados do MySQL em um local
+      # gerenciado pelo Docker, independente do ciclo de vida do
+      # container. Sem isso, todo dado seria perdido a cada
+      # "docker compose down".
+      - db-data:/var/lib/mysql
+
+      # Monta nosso script SQL na pasta especial que o MySQL executa
+      # automaticamente na primeira inicialização do volume.
+      - ./api/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    # Verifica periodicamente se o MySQL já está pronto para aceitar
+    # conexões. É esse status ("healthy") que o "depends_on" da API
+    # espera antes de liberar a inicialização do outro serviço.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - app-network
+
+# -----------------------------------------------------------------------------
+# Volumes nomeados — gerenciados pelo Docker, sobrevivem a
+# "docker compose down" (só são apagados com "docker compose down -v").
+# -----------------------------------------------------------------------------
+volumes:
+  db-data:
+
+# -----------------------------------------------------------------------------
+# Rede interna compartilhada pelos dois serviços. Poderíamos até omitir
+# essa seção — o Compose cria uma rede padrão automaticamente — mas
+# declará-la explicitamente deixa claro que "api" e "db" estão na
+# mesma rede e por isso conseguem se enxergar pelo nome do serviço.
+# -----------------------------------------------------------------------------
+networks:
+  app-network:
+    driver: bridge
+
+# -----------------------------------------------------------------------------
+# Para executar:  docker compose up -d --build
+# Para parar:     docker compose down
+# Para parar E apagar os dados do banco:  docker compose down -v
+# -----------------------------------------------------------------------------
