@@ -90,7 +90,7 @@ devops-com-aws-infraestrutura-e-automacao/
 | # | Aula | Tema | Status |
 |---|------|------|--------|
 | 1 | [Aula 01 - Docker](<Aula 01 - Docker/README.md>) | Introdução ao DevOps e Docker | ✅ Disponível |
-| 2 | [Aula 02 - Terraform](<Aula 02 - Terraform/README.md>) | Infraestrutura como Código com Terraform | 🚧 Em construção |
+| 2 | [Aula 02 - Terraform](<Aula 02 - Terraform/README.md>) | Infraestrutura como Código com Terraform | ✅ Disponível |
 | 3 | Aula 03 - Provisionamento Automático | User Data, Cloud-Init e deploy automatizado na EC2 | ⏳ Planejada |
 | 4 | Aula 04 - CI/CD com GitHub Actions | Pipeline de build, imagem Docker e deploy automático | ⏳ Planejada |
 | 5 | Aula 05 - Monitoramento e Observabilidade | CloudWatch, logs, métricas e alarmes | ⏳ Planejada |

@@ -1,0 +1,12 @@
+# Terraform
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/terraform.tfvars
+**/*.tfplan
+# (.terraform.lock.hcl NÃO é ignorado — ele deve ir para o Git, ver módulo 04)
+
+# Chaves / credenciais
+*.pem
+*.ppk
+.aws/
