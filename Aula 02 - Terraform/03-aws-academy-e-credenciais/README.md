@@ -215,7 +215,30 @@ data "aws_key_pair" "vockey" {
 ```
 
 Vamos usar os dois `data sources` acima no módulo
-[07-exercicio-03-ec2-com-iam](../07-exercicio-03-ec2-com-iam/README.md).
+[08-exercicio-03-ec2-com-iam](../08-exercicio-03-ec2-com-iam/README.md).
+
+### 3. A conta "trava sozinha" se a aba do Lab ficar muito tempo parada
+
+Essa é sutil e pega muita gente de surpresa: mesmo com o Lab mostrando
+bastante **"Remaining session time"**, se você ficar um tempo sem
+interagir com a aba do Learner Lab (por exemplo, durante a parte teórica
+da aula, sem tocar em nada), a AWS Academy pode anexar uma política de
+**bloqueio total** (`voc-cancel-cred`) à sua conta — e todo comando, de
+qualquer serviço, passa a retornar `AccessDenied`/`UnauthorizedOperation`
+com a mensagem `explicit deny in an identity-based policy:
+arn:aws:iam::...:policy/voc-cancel-cred`, mesmo em ações que funcionavam
+minutos antes.
+
+**Se isso acontecer:** não é erro no seu código nem na sua conta — volte
+à aba do Learner Lab, interaja com a página (role, clique em algo) e
+gere um novo bloco em **AWS Details → Show** (mesmo que o antigo
+"pareça" ainda válido). Repita o Passo 3 deste módulo com as credenciais
+novas. Normalmente volta a funcionar imediatamente.
+
+> 💡 Durante a aula, se formos passar muito tempo só na teoria, vale a
+> pena deixar a aba do Lab aberta e dar uma "cutucada" nela (um clique
+> qualquer) de vez em quando, para não cair nesse bloqueio no meio de um
+> exercício prático.
 
 ---
 
@@ -250,4 +273,4 @@ Vamos usar os dois `data sources` acima no módulo
    confirmar a resposta na prática no próximo módulo, mas já pense a
    respeito).
 
-**Próximo passo:** [04-primeiros-comandos-terraform](../04-primeiros-comandos-terraform/README.md)
+**Próximo passo:** [04-aws-cli-na-pratica](../04-aws-cli-na-pratica/README.md)

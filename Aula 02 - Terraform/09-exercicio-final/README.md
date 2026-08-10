@@ -38,11 +38,11 @@ Toda a infraestrutura abaixo, criada **inteiramente por código**, com um
 ```
 
 - **Rede** — VPC, Subnet, Internet Gateway, Route Table (reaproveite o
-  que já funcionou no módulo 05).
+  que já funcionou no módulo 06).
 - **Segurança** — Security Group com SSH restrito ao seu IP e HTTP/HTTPS
-  públicos (módulo 06).
+  públicos (módulo 07).
 - **Servidor** — EC2 com IAM Instance Profile e key pair (`vockey`) já
-  existentes na AWS Academy (módulo 07).
+  existentes na AWS Academy (módulo 08).
 
 Ou seja: este exercício não tem conteúdo novo — ele testa se você
 consegue **organizar, do zero, um projeto Terraform completo**,

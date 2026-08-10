@@ -142,4 +142,4 @@ a ele.
    o valor para `10.0.1.0/24`** (não aplique essa mudança — é só para
    observar o `plan`).
 
-**Próximo passo:** [06-exercicio-02-security-group](../06-exercicio-02-security-group/README.md)
+**Próximo passo:** [07-exercicio-02-security-group](../07-exercicio-02-security-group/README.md)

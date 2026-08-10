@@ -10,8 +10,8 @@ prontos na AWS Academy. Continuamos no mesmo projeto `terraform-rede`.
 
 - Uma **AMI** (Amazon Machine Image) do Amazon Linux 2023, buscada
   dinamicamente (sempre a versão mais recente).
-- Uma **instância EC2**, dentro da subnet pública do módulo 05, protegida
-  pelo Security Group do módulo 06.
+- Uma **instância EC2**, dentro da subnet pública do módulo 06, protegida
+  pelo Security Group do módulo 07.
 - Um **IAM Instance Profile** e uma **key pair (SSH)** — nenhum dos dois
   criado por nós: **reaproveitados** do que já existe na AWS Academy
   (`LabInstanceProfile` e `vockey`, respectivamente).
@@ -84,7 +84,7 @@ Salve o arquivo `vockey.pem` dentro da pasta do seu projeto
 
 Copie o arquivo [`ec2.tf`](ec2.tf) deste módulo para dentro da pasta
 `terraform-rede` (o `required_providers` do projeto não muda — este
-módulo usa só o provider `aws`, que você já tem desde o módulo 04).
+módulo usa só o provider `aws`, que você já tem desde o módulo 05).
 
 ### 3. Planejar e aplicar
 
@@ -141,7 +141,7 @@ confira, na aba **Security**, que o `IAM Role` mostrado é o
 
 ### 6. Manter de pé (por enquanto!)
 
-⚠️ Assim como no módulo 05, **não rode `terraform destroy` ainda** — este
+⚠️ Assim como no módulo 06, **não rode `terraform destroy` ainda** — este
 mesmo projeto vira a base do exercício final.
 
 ---
@@ -175,4 +175,4 @@ mesmo projeto vira a base do exercício final.
    **volte o código ao original** (referenciando o `data source`) e
    aplique de novo.
 
-**Próximo passo:** [08-exercicio-final](../08-exercicio-final/README.md)
+**Próximo passo:** [09-exercicio-final](../09-exercicio-final/README.md)

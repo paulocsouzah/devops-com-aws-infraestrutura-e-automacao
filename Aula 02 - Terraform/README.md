@@ -12,11 +12,12 @@ no Console.
 | [01-conceitos](01-conceitos/README.md) | O que é IaC, estrutura do Terraform (providers, resources, variables, outputs, state), boas práticas |
 | [02-instalacao-terraform-e-aws-cli](02-instalacao-terraform-e-aws-cli/README.md) | Instalar Terraform e AWS CLI (Windows/Linux/Mac) |
 | [03-aws-academy-e-credenciais](03-aws-academy-e-credenciais/README.md) | Iniciar o Learner Lab, obter credenciais temporárias e conectar o Terraform à AWS Academy |
-| [04-primeiros-comandos-terraform](04-primeiros-comandos-terraform/README.md) | `terraform init`, `plan`, `apply`, `destroy`, `fmt`, `validate` e o arquivo de state |
-| [05-exercicio-01-rede](05-exercicio-01-rede/README.md) | VPC, Subnet, Internet Gateway e Route Table por código |
-| [06-exercicio-02-security-group](06-exercicio-02-security-group/README.md) | Regras de firewall (Security Group) por código |
-| [07-exercicio-03-ec2-com-iam](07-exercicio-03-ec2-com-iam/README.md) | Subir uma EC2 usando a rede criada e o papel IAM da AWS Academy |
-| [08-exercicio-final](08-exercicio-final/README.md) | Projeto integrador `terraform-aula02` (VPC + Subnet + IGW + Route Table + Security Group + EC2 + IAM) — entrega em PDF |
+| [04-aws-cli-na-pratica](04-aws-cli-na-pratica/README.md) | AWS CLI na prática: bucket S3, upload/download de arquivos e outros comandos úteis do dia a dia |
+| [05-primeiros-comandos-terraform](05-primeiros-comandos-terraform/README.md) | `terraform init`, `plan`, `apply`, `destroy`, `fmt`, `validate` e o arquivo de state |
+| [06-exercicio-01-rede](06-exercicio-01-rede/README.md) | VPC, Subnet, Internet Gateway e Route Table por código |
+| [07-exercicio-02-security-group](07-exercicio-02-security-group/README.md) | Regras de firewall (Security Group) por código |
+| [08-exercicio-03-ec2-com-iam](08-exercicio-03-ec2-com-iam/README.md) | Subir uma EC2 usando a rede criada e o papel IAM da AWS Academy |
+| [09-exercicio-final](09-exercicio-final/README.md) | Projeto integrador `terraform-aula02` (VPC + Subnet + IGW + Route Table + Security Group + EC2 + IAM) — entrega em PDF |
 
 ## ▶️ Como usar
 
@@ -40,7 +41,7 @@ da aula precisa ter sido criado pelo Terraform.
 
 ## 🏁 Avaliação
 
-O módulo [08-exercicio-final](08-exercicio-final/README.md) fecha a aula
+O módulo [09-exercicio-final](09-exercicio-final/README.md) fecha a aula
 com um projeto que junta tudo (rede + segurança + servidor em um único
 conjunto de arquivos `.tf`, criado com `terraform apply`). Ao final dele,
 você deve me enviar um **relatório em PDF** com prints, comandos

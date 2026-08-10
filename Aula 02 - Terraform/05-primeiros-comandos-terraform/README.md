@@ -248,4 +248,4 @@ terraform.tfstate.backup
    bucket (`bucket = "..."`) exigiria? Ao final, rode `terraform destroy`
    de novo para não deixar recurso órfão.
 
-**Próximo passo:** [05-exercicio-01-rede](../05-exercicio-01-rede/README.md)
+**Próximo passo:** [06-exercicio-01-rede](../06-exercicio-01-rede/README.md)

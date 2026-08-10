@@ -1,5 +1,5 @@
 # Este arquivo é feito para ser ADICIONADO dentro da mesma pasta do
-# projeto "terraform-rede" (criado no módulo 05) — o Terraform lê e
+# projeto "terraform-rede" (criado no módulo 06) — o Terraform lê e
 # combina automaticamente TODOS os arquivos .tf de uma mesma pasta.
 # Ele referencia aws_vpc.main, que já existe em main.tf.
 

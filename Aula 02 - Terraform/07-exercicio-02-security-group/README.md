@@ -2,7 +2,7 @@
 
 Com a rede pronta (módulo anterior), o próximo passo é decidir **quem
 pode falar com quem** — é isso que um Security Group faz. Vamos continuar
-**dentro do mesmo projeto** `terraform-rede` criado no módulo 05 (o
+**dentro do mesmo projeto** `terraform-rede` criado no módulo 06 (o
 Terraform combina automaticamente todos os arquivos `.tf` de uma pasta),
 adicionando um novo arquivo.
 
@@ -77,7 +77,7 @@ fixo esquecido no código (e possivelmente commitado no Git).
 ### 3. Informar o valor sem deixá-lo hardcoded no código versionado
 
 Crie um arquivo `terraform.tfvars` (não vai para o Git — já está no
-`.gitignore` do módulo 04):
+`.gitignore` do módulo 05):
 
 ```hcl
 my_ip = "203.0.113.42"
@@ -140,4 +140,4 @@ Console da AWS → **EC2 → Security Groups** → confirme as 3 regras de
    devolver essa resposta ao usuário — quais dessas trocas dependem de
    tráfego de saída?)
 
-**Próximo passo:** [07-exercicio-03-ec2-com-iam](../07-exercicio-03-ec2-com-iam/README.md)
+**Próximo passo:** [08-exercicio-03-ec2-com-iam](../08-exercicio-03-ec2-com-iam/README.md)

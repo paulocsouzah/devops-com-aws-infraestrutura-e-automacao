@@ -1,6 +1,6 @@
 # Este arquivo é feito para ser ADICIONADO dentro da mesma pasta do
-# projeto "terraform-rede" (já contém a rede do módulo 05 e o Security
-# Group do módulo 06).
+# projeto "terraform-rede" (já contém a rede do módulo 06 e o Security
+# Group do módulo 07).
 
 # AMI mais recente do Amazon Linux 2023, direto da conta oficial da
 # Amazon — em vez de "chumbar" um ID de imagem (que muda de tempos em
@@ -34,8 +34,8 @@ data "aws_key_pair" "vockey" {
 }
 
 # A instância EC2 em si — repare que ela só existe porque reaproveita
-# tudo que já foi criado: a subnet (módulo 05), o security group
-# (módulo 06), o instance profile e o key pair (data sources acima).
+# tudo que já foi criado: a subnet (módulo 06), o security group
+# (módulo 07), o instance profile e o key pair (data sources acima).
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
