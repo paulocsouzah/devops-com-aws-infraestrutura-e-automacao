@@ -124,6 +124,9 @@ curl https://checkip.amazonaws.com
 Copie [`terraform.tfvars.example`](terraform-aula03/terraform.tfvars.example)
 para `terraform.tfvars` e preencha `my_ip`, `db_password` e
 `app_repo_url` (a URL HTTPS do seu repositório `app-aula03` no GitHub).
+Neste projeto, `app_repo_url` aponta para
+[github.com/paulocsouzah/app-aula03](https://github.com/paulocsouzah/app-aula03.git)
+— o repositório usado como base da aplicação para esta aula.
 `db_name` e `db_username` já têm valores padrão em `variables.tf` — só
 sobrescreva se quiser nomes diferentes.
 
