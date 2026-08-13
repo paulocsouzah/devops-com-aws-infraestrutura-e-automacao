@@ -23,6 +23,8 @@ Ao final da disciplina, o aluno será capaz de:
   sem clicar em nada manualmente no Console.
 - Automatizar o **provisionamento de servidores** (User Data / Cloud-Init),
   eliminando configuração manual pós-criação da máquina.
+- Orquestrar containers em produção com **Amazon ECS** (Fargate), incluindo
+  balanceamento de carga e escalabilidade automática.
 - Construir uma **pipeline de CI/CD** com GitHub Actions que builda, publica
   e faz deploy automático da aplicação.
 - Implementar **monitoramento e observabilidade** com CloudWatch (métricas,
@@ -80,9 +82,10 @@ devops-com-aws-infraestrutura-e-automacao/
 │   └── 08-exercicio-final/
 ├── Aula 02 - Terraform/
 ├── Aula 03 - Provisionamento Automatico/
-├── Aula 04 - CI-CD com GitHub Actions/
-├── Aula 05 - Monitoramento e Observabilidade/
-└── Aula 06 - Projeto Integrador/
+├── Aula 04 - ECS e Deploy Gerenciado de Containers/
+├── Aula 05 - CI-CD com GitHub Actions/
+├── Aula 06 - Monitoramento e Observabilidade/
+└── Aula 07 - Projeto Integrador/
 ```
 
 ## 📚 Grade do curso
@@ -91,10 +94,11 @@ devops-com-aws-infraestrutura-e-automacao/
 |---|------|------|--------|
 | 1 | [Aula 01 - Docker](<Aula 01 - Docker/README.md>) | Introdução ao DevOps e Docker | ✅ Disponível |
 | 2 | [Aula 02 - Terraform](<Aula 02 - Terraform/README.md>) | Infraestrutura como Código com Terraform | ✅ Disponível |
-| 3 | Aula 03 - Provisionamento Automático | User Data, Cloud-Init e deploy automatizado na EC2 | ⏳ Planejada |
-| 4 | Aula 04 - CI/CD com GitHub Actions | Pipeline de build, imagem Docker e deploy automático | ⏳ Planejada |
-| 5 | Aula 05 - Monitoramento e Observabilidade | CloudWatch, logs, métricas e alarmes | ⏳ Planejada |
-| 6 | Aula 06 - Projeto Integrador | Projeto final integrando todo o conteúdo do módulo | ⏳ Planejada |
+| 3 | [Aula 03 - Provisionamento Automatico](<Aula 03 - Provisionamento Automatico/README.md>) | User Data, Cloud-Init, RDS e deploy automatizado (React + Node) | 🚧 Em construção |
+| 4 | Aula 04 - ECS e Deploy Gerenciado de Containers | Cluster Fargate, Task Definition, Service, ALB e Auto Scaling, por Terraform | ⏳ Planejada |
+| 5 | Aula 05 - CI/CD com GitHub Actions | Pipeline de build, imagem Docker e deploy automático no ECS | ⏳ Planejada |
+| 6 | Aula 06 - Monitoramento e Observabilidade | CloudWatch, Container Insights, logs, métricas e alarmes | ⏳ Planejada |
+| 7 | Aula 07 - Projeto Integrador | Projeto final integrando todo o conteúdo do módulo | ⏳ Planejada |
 
 **Como usar:** siga as aulas na ordem numérica. Dentro de cada aula, siga
 também as subpastas na ordem — cada uma parte do que foi construído na
@@ -151,31 +155,58 @@ criada automaticamente.
 ### ⚙️ Aula 3 — Provisionamento Automático dos Servidores
 
 **Conteúdo**
-- User Data
-- Cloud-Init
-- Provisionamento automatizado
-- Organização dos servidores
+- User Data e Cloud-Init
+- Provisionamento automatizado e organização dos servidores
+- Banco de dados gerenciado (Amazon RDS) vs. banco em container
+- Dependências implícitas/explícitas no Terraform e boas práticas de
+  resiliência da aplicação
 
-**Prática:** durante a criação da EC2, instalar automaticamente Docker,
-Docker Compose, Git, Nginx e demais dependências necessárias. Após a
-criação da máquina, realizar o primeiro deploy da aplicação.
+**Prática:** evoluir o projeto Terraform da Aula 2 com um banco **RDS
+MySQL** isolado em subnet privada e uma EC2 que se autoprovisiona via
+`user_data` — instala Docker, Docker Compose, Git e Nginx, clona o
+repositório de uma aplicação **React (frontend) + Node.js (API)** e
+sobe tudo conectado ao RDS, sem nenhum comando manual pós-`apply`.
 
 **Objetivo da aula:** criar uma EC2 pronta para receber aplicações sem
-executar nenhum comando manual.
+executar nenhum comando manual, com uma aplicação real no ar, conectada
+a um banco de dados gerenciado.
+
+📂 [Acessar material da Aula 03](<Aula 03 - Provisionamento Automatico/README.md>)
 
 ---
 
-### 🔄 Aula 4 — CI/CD com GitHub Actions
+### 🚢 Aula 4 — ECS e Deploy Gerenciado de Containers
+
+**Conteúdo**
+- De "uma EC2 com Docker Compose" para orquestração gerenciada: por que ECS
+- Conceitos: Cluster, Task Definition, Service, launch type Fargate
+- Application Load Balancer e Target Groups
+- Application Auto Scaling (target tracking por CPU)
+- IAM Roles do ECS: execution role vs. task role
+
+**Prática:** criar, por Terraform (aplicado manualmente pelo aluno, ainda
+sem pipeline), um Cluster ECS no modo Fargate, publicar a aplicação da
+Aula 3 como Task Definition + Service atrás de um Application Load
+Balancer, com Auto Scaling configurado por utilização de CPU.
+
+**Objetivo da aula:** sair do modelo "uma EC2 que roda containers" para
+orquestração gerenciada com escalabilidade automática, sem administrar
+servidor nenhum.
+
+---
+
+### 🔄 Aula 5 — CI/CD com GitHub Actions
 
 **Conteúdo**
 - Conceitos de CI/CD
 - GitHub Actions, Workflows
 - Secrets e variáveis de ambiente
-- Deploy automatizado
+- Deploy automatizado no ECS (nova revisão da Task Definition + rolling
+  deployment do Service)
 
 **Prática:** pipeline completo contendo build da aplicação, build da
-imagem Docker, publicação da imagem e atualização automática da aplicação
-na EC2.
+imagem Docker, publicação da imagem e atualização automática do Service
+criado na Aula 4 — sem precisar reconfigurar servidor nenhum.
 
 **Recursos gratuitos:** GitHub, GitHub Actions, GitHub Container Registry
 (GHCR).
@@ -185,23 +216,25 @@ na branch principal.
 
 ---
 
-### 📊 Aula 5 — Monitoramento e Observabilidade
+### 📊 Aula 6 — Monitoramento e Observabilidade
 
 **Conteúdo**
 - O que monitorar: métricas, logs, alarmes
 - Observabilidade
-- Recursos AWS: CloudWatch, CloudWatch Agent, SNS
+- Recursos AWS: CloudWatch, Container Insights, logs do ECS/Fargate,
+  métricas do Application Load Balancer, SNS
 
-**Prática:** monitorar CPU, memória, disco, logs da aplicação, logs do
-Nginx e logs do Docker. Criar um alarme de utilização elevada de CPU com
-envio de notificação por e-mail.
+**Prática:** monitorar CPU e memória das tasks do ECS, logs dos
+containers (driver `awslogs`) e métricas do Load Balancer (latência,
+erros 5xx). Criar um alarme de utilização elevada de CPU com envio de
+notificação por e-mail.
 
 **Objetivo da aula:** aprender a acompanhar a saúde de uma aplicação em
-produção.
+produção rodando em containers gerenciados.
 
 ---
 
-### 🎓 Aula 6 — Projeto Integrador
+### 🎓 Aula 7 — Projeto Integrador
 
 **Objetivo:** integrar todo o conteúdo aprendido durante o módulo.
 
@@ -209,7 +242,7 @@ produção.
 1. Desenvolver uma nova funcionalidade.
 2. Realizar commit no GitHub.
 3. Executar automaticamente a pipeline.
-4. Atualizar a aplicação na AWS.
+4. Publicar uma nova revisão da Task Definition e atualizar o Service no ECS.
 5. Validar o deploy.
 6. Monitorar os logs e métricas.
 7. Corrigir possíveis problemas.
@@ -226,9 +259,9 @@ ambiente semelhante ao utilizado em empresas, contendo:
 
 - Infraestrutura criada automaticamente com Terraform.
 - Aplicação containerizada com Docker.
+- Orquestração gerenciada com ECS (Fargate) e Auto Scaling.
 - Deploy automatizado utilizando GitHub Actions.
-- Servidor configurado automaticamente.
-- Proxy reverso com Nginx.
+- Balanceamento de carga com Application Load Balancer.
 - Monitoramento utilizando CloudWatch.
 - Pipeline completa de CI/CD.
 - Projeto versionado no GitHub seguindo boas práticas de DevOps.
@@ -238,7 +271,8 @@ ambiente semelhante ao utilizado em empresas, contendo:
 ## 🧰 Ferramentas utilizadas
 
 **AWS Academy**
-- EC2, VPC, Security Groups, IAM, CloudWatch, SNS, S3 (opcional)
+- EC2, VPC, Security Groups, IAM, RDS, CloudWatch, SNS, S3 (opcional)
+- ECS (Fargate), Application Load Balancer, Application Auto Scaling
 
 **Ferramentas gratuitas**
 - GitHub, GitHub Actions, GitHub Container Registry (GHCR)
