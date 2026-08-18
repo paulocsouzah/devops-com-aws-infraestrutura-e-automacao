@@ -94,9 +94,9 @@ devops-com-aws-infraestrutura-e-automacao/
 |---|------|------|--------|
 | 1 | [Aula 01 - Docker](<Aula 01 - Docker/README.md>) | Introdução ao DevOps e Docker | ✅ Disponível |
 | 2 | [Aula 02 - Terraform](<Aula 02 - Terraform/README.md>) | Infraestrutura como Código com Terraform | ✅ Disponível |
-| 3 | [Aula 03 - Provisionamento Automatico](<Aula 03 - Provisionamento Automatico/README.md>) | User Data, Cloud-Init, RDS e deploy automatizado (React + Node) | 🚧 Em construção |
-| 4 | [Aula 04 - ECS e Deploy Gerenciado de Containers](<Aula 04 - ECS e Deploy Gerenciado de Containers/README.md>) | Cluster Fargate, Task Definition, Service, ALB e Auto Scaling, por Terraform | 🚧 Em construção |
-| 5 | Aula 05 - CI/CD com GitHub Actions | Pipeline de build, imagem Docker e deploy automático no ECS | ⏳ Planejada |
+| 3 | [Aula 03 - Provisionamento Automatico](<Aula 03 - Provisionamento Automatico/README.md>) | User Data, Cloud-Init, RDS e deploy automatizado (React + Node) | ✅ Disponível |
+| 4 | [Aula 04 - ECS e Deploy Gerenciado de Containers](<Aula 04 - ECS e Deploy Gerenciado de Containers/README.md>) | Cluster Fargate, Task Definition, Service, ALB e Auto Scaling, por Terraform | ✅ Disponível |
+| 5 | Aula 05 - CI/CD com GitHub Actions | Pipeline de build, imagem Docker e deploy automático no ECS | 🚧 Em construção |
 | 6 | Aula 06 - Monitoramento e Observabilidade | CloudWatch, Container Insights, logs, métricas e alarmes | ⏳ Planejada |
 | 7 | Aula 07 - Projeto Integrador | Projeto final integrando todo o conteúdo do módulo | ⏳ Planejada |
 
