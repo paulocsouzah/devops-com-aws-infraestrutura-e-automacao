@@ -93,7 +93,10 @@ Se algo estiver faltando, volte no módulo correspondente (02, 04 ou 05).
 O Lab pode ter expirado desde a última sessão — atualize
 `~/.aws/credentials`, confirme que `my_ip` ainda é o seu IP atual
 (`curl https://checkip.amazonaws.com`) e que `app_repo_url` aponta pro
-seu repositório `app-aula03` no GitHub.
+seu repositório `app-aula03` no GitHub. Neste projeto, `app_repo_url`
+aponta para
+[github.com/paulocsouzah/app-aula03](https://github.com/paulocsouzah/app-aula03.git)
+— o repositório usado como base da aplicação para esta aula.
 
 ### 5. Inicializar, validar e planejar
 

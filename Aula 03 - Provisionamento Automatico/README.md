@@ -10,6 +10,13 @@ parou: a mesma rede, o mesmo Security Group, a mesma EC2. A diferença é
 que agora a máquina não fica "vazia" — ela nasce pronta, com a aplicação
 rodando.
 
+> 📦 **Repositório da aplicação:** o `app-aula03` usado como base nesta
+> aula (e clonado pelo `user_data` no módulo 05 e no exercício final) está
+> publicado em **[github.com/paulocsouzah/app-aula03](https://github.com/paulocsouzah/app-aula03)**
+> — separado deste repositório de infraestrutura, como recomenda o
+> [módulo 03](03-preparando-a-aplicacao/README.md). É a URL desse
+> repositório que vai em `app_repo_url` no `terraform.tfvars`.
+
 ## 📚 Estrutura
 
 | Pasta | Conteúdo |
