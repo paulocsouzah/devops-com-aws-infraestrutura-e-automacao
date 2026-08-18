@@ -1,44 +1,59 @@
 output "vpc_id" {
-  description = "ID da VPC"
+  description = "ID da VPC criada"
   value       = aws_vpc.main.id
 }
 
-output "alb_dns_name" {
-  description = "DNS publico do Application Load Balancer — e por aqui que a aplicacao e acessada"
-  value       = aws_lb.main.dns_name
+output "subnet_id" {
+  description = "ID da subnet publica criada"
+  value       = aws_subnet.public.id
 }
 
-output "app_url" {
-  description = "URL da aplicacao no navegador"
-  value       = "http://${aws_lb.main.dns_name}"
+output "private_subnet_id" {
+  description = "ID da subnet privada criada (RDS)"
+  value       = aws_subnet.private.id
 }
 
-output "ecr_frontend_repository_url" {
-  description = "URL do repositorio ECR do frontend"
-  value       = aws_ecr_repository.frontend.repository_url
+output "internet_gateway_id" {
+  description = "ID do Internet Gateway criado"
+  value       = aws_internet_gateway.main.id
 }
 
-output "ecr_api_repository_url" {
-  description = "URL do repositorio ECR da api"
-  value       = aws_ecr_repository.api.repository_url
+output "route_table_id" {
+  description = "ID da Route Table publica criada"
+  value       = aws_route_table.public.id
 }
 
-output "ecs_cluster_name" {
-  description = "Nome do Cluster ECS"
-  value       = aws_ecs_cluster.main.name
+output "security_group_id" {
+  description = "ID do Security Group da EC2"
+  value       = aws_security_group.web.id
 }
 
-output "ecs_frontend_service_name" {
-  description = "Nome do Service do frontend"
-  value       = aws_ecs_service.frontend.name
-}
-
-output "ecs_api_service_name" {
-  description = "Nome do Service da api"
-  value       = aws_ecs_service.api.name
+output "security_group_rds_id" {
+  description = "ID do Security Group do RDS"
+  value       = aws_security_group.rds.id
 }
 
 output "db_endpoint" {
   description = "Endpoint (host) da instancia RDS"
   value       = aws_db_instance.main.address
+}
+
+output "db_port" {
+  description = "Porta da instancia RDS"
+  value       = aws_db_instance.main.port
+}
+
+output "instance_public_ip" {
+  description = "IP publico da instancia EC2 criada"
+  value       = aws_instance.web.public_ip
+}
+
+output "app_url" {
+  description = "URL da aplicacao no navegador"
+  value       = "http://${aws_instance.web.public_ip}"
+}
+
+output "ssh_command" {
+  description = "Comando pronto para conectar via SSH (rode a partir da pasta onde salvou o vockey.pem)"
+  value       = "ssh -i vockey.pem ec2-user@${aws_instance.web.public_ip}"
 }

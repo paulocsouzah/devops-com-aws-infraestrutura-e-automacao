@@ -21,7 +21,7 @@ depois de outro quando existe uma dependência:
   assim um recurso precisa esperar o outro, você usa `depends_on`:
 
   ```hcl
-  resource "aws_instance" "app" {
+  resource "aws_instance" "web" {
     # ...
     depends_on = [aws_db_instance.main]
   }

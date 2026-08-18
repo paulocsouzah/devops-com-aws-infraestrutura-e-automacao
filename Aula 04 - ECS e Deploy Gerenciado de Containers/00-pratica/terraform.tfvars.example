@@ -1,7 +1,11 @@
 # Copie este arquivo para "terraform.tfvars" (que NAO vai para o Git) e
-# preencha a senha do banco abaixo.
-#
-# Repare como esse arquivo ficou mais simples que o da Aula 03: nao tem
-# mais "my_ip" (sem SSH) nem "app_repo_url" (sem user_data/git clone).
+# preencha os valores abaixo.
 
+# Seu IP publico (rode: curl https://checkip.amazonaws.com)
+my_ip = "SEU_IP_AQUI"
+
+# Senha do usuario administrador do RDS — escolha a sua, nao commite
 db_password = "SUA_SENHA_AQUI"
+
+# URL HTTPS do seu repositorio app-aula03 (modulo 03), clonado pelo user_data
+app_repo_url = "https://github.com/SEU_USUARIO/app-aula03.git"

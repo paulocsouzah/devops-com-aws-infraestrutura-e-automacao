@@ -1,17 +1,17 @@
 # Security Group do banco — so aceita MySQL (3306) vindo do Security
-# Group das tasks do ECS (Aula 03 apontava para o sg-web da EC2, que
-# nao existe mais).
+# Group da EC2 (nunca de um CIDR aberto). "security_groups" em vez de
+# "cidr_blocks": a origem permitida e outro Security Group, nao um IP.
 resource "aws_security_group" "rds" {
   name        = "${var.project_name}-sg-rds"
-  description = "Permite MySQL apenas a partir das tasks do ECS"
+  description = "Permite MySQL apenas a partir da EC2 da aplicacao"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "MySQL a partir das tasks do ECS"
+    description     = "MySQL a partir da EC2"
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.ecs_tasks.id]
+    security_groups = [aws_security_group.web.id]
   }
 
   egress {
@@ -26,8 +26,8 @@ resource "aws_security_group" "rds" {
   }
 }
 
-# Instancia RDS MySQL — identica a Aula 03, so muda quem tem permissao
-# de conectar (agora as tasks do ECS, nao mais a EC2).
+# Instancia RDS MySQL — gerenciada pela AWS, sem IP publico, isolada na
+# subnet privada (via DB Subnet Group).
 resource "aws_db_instance" "main" {
   identifier             = "${var.project_name}-db"
   engine                 = "mysql"

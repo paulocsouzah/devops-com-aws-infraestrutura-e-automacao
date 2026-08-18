@@ -9,7 +9,8 @@ resource "aws_vpc" "main" {
   }
 }
 
-# 2. Subnet publica AZ1
+# 2. Subnet publica — associada a uma AZ, com IP publico automatico.
+# E aqui que a EC2 da aplicacao mora.
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_cidr
@@ -44,7 +45,7 @@ resource "aws_route_table" "public" {
   }
 }
 
-# 5. Associacao da Route Table com a subnet publica AZ1
+# 5. Associacao da Route Table com a subnet publica
 resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id

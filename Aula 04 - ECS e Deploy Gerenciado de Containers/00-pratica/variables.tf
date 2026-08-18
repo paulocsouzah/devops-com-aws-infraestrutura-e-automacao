@@ -1,8 +1,5 @@
-# Variaveis do projeto terraform-aula04 — rede + RDS (Aula 03) + ECS,
-# ALB e Auto Scaling (Aula 04), tudo consolidado.
-#
-# Repare no que NAO existe mais, comparado a Aula 03: "my_ip" (nao ha
-# mais SSH) e "app_repo_url" (nao ha mais user_data/git clone).
+# Variaveis do projeto terraform-aula03 — rede/EC2 (Aula 02) + RDS e
+# aplicacao (Aula 03), tudo consolidado num unico arquivo.
 
 variable "aws_region" {
   description = "Regiao AWS onde os recursos serao criados"
@@ -11,13 +8,13 @@ variable "aws_region" {
 }
 
 variable "availability_zone" {
-  description = "Availability Zone da subnet publica principal (AZ1)"
+  description = "Availability Zone onde a subnet publica sera criada"
   type        = string
   default     = "us-east-1a"
 }
 
 variable "availability_zone_b" {
-  description = "Segunda Availability Zone — subnet privada (RDS) e subnet publica do ALB"
+  description = "Segunda Availability Zone, usada pela subnet privada do RDS (precisa ser diferente da AZ da subnet publica)"
   type        = string
   default     = "us-east-1b"
 }
@@ -29,15 +26,9 @@ variable "vpc_cidr" {
 }
 
 variable "public_subnet_cidr" {
-  description = "Faixa de IPs (CIDR) da subnet publica AZ1"
+  description = "Faixa de IPs (CIDR) da subnet publica"
   type        = string
   default     = "10.0.1.0/24"
-}
-
-variable "public_subnet_b_cidr" {
-  description = "Faixa de IPs (CIDR) da subnet publica AZ2 (ALB)"
-  type        = string
-  default     = "10.0.3.0/24"
 }
 
 variable "private_subnet_cidr" {
@@ -49,7 +40,12 @@ variable "private_subnet_cidr" {
 variable "project_name" {
   description = "Prefixo usado no nome/tags de todos os recursos deste projeto"
   type        = string
-  default     = "aula04"
+  default     = "aula03"
+}
+
+variable "my_ip" {
+  description = "Seu IP publico, usado para restringir o acesso SSH (defina em terraform.tfvars)"
+  type        = string
 }
 
 variable "db_name" {
@@ -70,50 +66,7 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "frontend_desired_count" {
-  description = "Quantidade de tasks do frontend que o Service deve manter rodando"
-  type        = number
-  default     = 1
-}
-
-variable "api_desired_count" {
-  description = "Quantidade de tasks da api que o Service deve manter rodando"
-  type        = number
-  default     = 1
-}
-
-variable "frontend_min_capacity" {
-  description = "Quantidade minima de tasks do frontend (Auto Scaling)"
-  type        = number
-  default     = 1
-}
-
-variable "frontend_max_capacity" {
-  description = "Quantidade maxima de tasks do frontend (Auto Scaling)"
-  type        = number
-  default     = 3
-}
-
-variable "api_min_capacity" {
-  description = "Quantidade minima de tasks da api (Auto Scaling)"
-  type        = number
-  default     = 1
-}
-
-variable "api_max_capacity" {
-  description = "Quantidade maxima de tasks da api (Auto Scaling)"
-  type        = number
-  default     = 3
-}
-
-variable "target_cpu_percent" {
-  description = "Percentual de CPU media que o Auto Scaling tenta manter"
-  type        = number
-  default     = 40
-}
-
-variable "target_memory_percent" {
-  description = "Percentual de memoria media que o Auto Scaling da api tenta manter"
-  type        = number
-  default     = 70
+variable "app_repo_url" {
+  description = "URL HTTPS do repositorio Git da aplicacao (app-aula03), clonado pelo user_data"
+  type        = string
 }

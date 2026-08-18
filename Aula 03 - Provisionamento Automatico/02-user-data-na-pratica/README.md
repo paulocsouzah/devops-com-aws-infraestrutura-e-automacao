@@ -15,21 +15,25 @@ ver o mecanismo funcionando. No módulo 05 ele é substituído pelo
 ## 🔌 Onde o User Data entra no `aws_instance`
 
 ```hcl
-resource "aws_instance" "app" {
+resource "aws_instance" "web" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
+  key_name               = data.aws_key_pair.vockey.key_name
   iam_instance_profile   = data.aws_iam_instance_profile.lab_profile.name
-  key_name               = "vockey"
 
   user_data = file("${path.module}/user_data.sh")
 
   tags = {
-    Name = "${var.project_name}-ec2"
+    Name = "${var.project_name}-ec2-web"
   }
 }
 ```
+
+(esse é o mesmo `resource "aws_instance" "web"` que você já tem em
+`00-pratica/ec2.tf`, trazido da Aula 02 — só adicione a linha
+`user_data` a ele, não crie um recurso novo)
 
 - `file("${path.module}/user_data.sh")` lê o conteúdo de um arquivo
   `.sh` na mesma pasta do projeto e entrega como User Data.

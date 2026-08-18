@@ -7,9 +7,10 @@ valida o que já está pronto.
 
 Diferente das aulas anteriores (se você já olhou a Aula 03 ou 04), esta
 é a **primeira** aula com Terraform — não existe nada de uma aula
-anterior para trazer pra cá. Esta pasta nasce vazia de infraestrutura de
-verdade (só este README) e vai ganhando arquivo por arquivo conforme
-você avança.
+anterior para trazer pra cá. Esta pasta nasce **sem nenhum arquivo
+`.tf`** — só este README e dois arquivos de apoio (`.gitignore` e
+`terraform.tfvars.example`, que o módulo 07 já vai usar) — e vai
+ganhando o código de verdade, arquivo por arquivo, conforme você avança.
 
 ## 📂 O que vai morar aqui, módulo a módulo
 

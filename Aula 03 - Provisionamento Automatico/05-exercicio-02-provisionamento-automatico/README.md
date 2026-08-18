@@ -14,8 +14,9 @@ endpoint do RDS não existe até o `apply` rodar, então não pode estar
 "hardcoded" no script. Para isso existe o `templatefile()`:
 
 ```hcl
-resource "aws_instance" "app" {
-  # ...
+resource "aws_instance" "web" {
+  # ... (ami, instance_type, subnet_id, vpc_security_group_ids, key_name,
+  #      iam_instance_profile — sem mudança, já estão em 00-pratica/ec2.tf)
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     db_host     = aws_db_instance.main.address
@@ -27,10 +28,13 @@ resource "aws_instance" "app" {
   })
 
   tags = {
-    Name = "${var.project_name}-ec2"
+    Name = "${var.project_name}-ec2-web"
   }
 }
 ```
+
+(é o mesmo `resource "aws_instance" "web"` do módulo 02 — troque só a
+linha `user_data`, de `file(...)` para `templatefile(...)`)
 
 > 💡 **Dependência implícita:** como o `user_data` referencia
 > `aws_db_instance.main.address`, o Terraform entende sozinho que a EC2

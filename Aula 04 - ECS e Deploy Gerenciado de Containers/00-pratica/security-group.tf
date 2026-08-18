@@ -1,6 +1,6 @@
-# Security Group — SSH restrito ao meu IP, HTTP/HTTPS públicos.
-# Regras de Security Group são stateful: a resposta de uma conexão
-# de entrada permitida é liberada automaticamente na saída.
+# Security Group — SSH restrito ao meu IP, HTTP/HTTPS publicos.
+# Regras de Security Group sao stateful: a resposta de uma conexao
+# de entrada permitida e liberada automaticamente na saida.
 resource "aws_security_group" "web" {
   name        = "${var.project_name}-sg-web"
   description = "Libera SSH (restrito ao meu IP) e HTTP/HTTPS (publico)"

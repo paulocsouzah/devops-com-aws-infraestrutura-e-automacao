@@ -18,15 +18,12 @@ data "aws_iam_instance_profile" "lab_profile" {
 # permite criar um Key Pair novo por código (mesma restrição do IAM
 # Role acima). Baixe o "vockey.pem" pela tela do Learner Lab (seção
 # "SSH key" > Download PEM) e salve dentro desta pasta antes do apply.
-# Fora da AWS Academy, o normal seria o próprio Terraform gerar/importar
-# a chave (com os providers "tls" + "hashicorp/local").
 data "aws_key_pair" "vockey" {
   key_name = "vockey"
 }
 
-# Instância EC2 — usa a subnet e o security group definidos nos
-# outros arquivos deste mesmo projeto, e o instance profile e o key
-# pair da AWS Academy referenciados acima
+# Instância EC2 — se autoprovisiona via user_data (templatefile),
+# já conectada ao RDS criado neste mesmo projeto.
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
@@ -34,6 +31,15 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = [aws_security_group.web.id]
   key_name               = data.aws_key_pair.vockey.key_name
   iam_instance_profile   = data.aws_iam_instance_profile.lab_profile.name
+
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    db_host     = aws_db_instance.main.address
+    db_port     = aws_db_instance.main.port
+    db_name     = var.db_name
+    db_user     = var.db_username
+    db_password = var.db_password
+    repo_url    = var.app_repo_url
+  })
 
   tags = {
     Name = "${var.project_name}-ec2-web"

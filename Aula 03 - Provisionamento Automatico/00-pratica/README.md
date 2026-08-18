@@ -11,6 +11,13 @@ módulo final (`07`) só valida o que já está pronto.
 > já tem os arquivos da Aula 02 (`network.tf`, `security-group.tf`,
 > `ec2.tf`...) — se não tiver, copie o conteúdo de lá antes de seguir.
 
+⚠️ **Antes do primeiro `apply`, atualize o `default` da variável
+`project_name`** em `variables.tf`, de `"aula02"` para `"aula03"`. Os
+comandos de exemplo nos módulos desta aula (ex: `aws rds
+describe-db-instances --db-instance-identifier aula03-db`) assumem esse
+prefixo — sem essa troca, os recursos continuam nascendo como
+`aula02-*` e os comandos de exemplo não encontram nada.
+
 ## 📂 O que muda aqui, módulo a módulo
 
 | Módulo | O que adiciona/muda em `00-pratica/` |

@@ -11,6 +11,14 @@ que já está pronto.
 > tem os arquivos da Aula 03 — se não tiver, copie o conteúdo de lá
 > antes de seguir.
 
+⚠️ **Antes do primeiro `apply`, atualize o `default` da variável
+`project_name`** em `variables.tf`, de `"aula03"` para `"aula04"`. Todo
+comando de exemplo desta aula (`aws ecs describe-services --cluster
+aula04-cluster`, `aws ecr describe-images --repository-name
+aula04-frontend`, etc.) assume esse prefixo — sem essa troca, os
+recursos nascem como `aula03-*` e nenhum desses comandos encontra
+nada.
+
 ## 📂 O que muda aqui, módulo a módulo
 
 | Módulo | O que adiciona/muda em `00-pratica/` |

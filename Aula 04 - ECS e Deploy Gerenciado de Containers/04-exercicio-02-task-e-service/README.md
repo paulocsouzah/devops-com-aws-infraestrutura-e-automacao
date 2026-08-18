@@ -35,9 +35,22 @@ E **ajuste dois arquivos que dependiam do que foi removido**:
      }
    ```
 
-2. **`outputs.tf`** — remova os outputs `instance_public_ip` e
-   `ssh_command` (referenciam `aws_instance.web`, que não existe mais).
-   Vamos adicionar outputs novos no módulo 07.
+2. **`outputs.tf`** — remova os quatro outputs que referenciam recursos
+   que não existem mais: `security_group_id` (`aws_security_group.web`),
+   `instance_public_ip`, `app_url` e `ssh_command` (os três últimos
+   referenciam `aws_instance.web`). No lugar deles, adicione o output
+   que a aplicação vai usar daqui em diante — o DNS do ALB (criado no
+   módulo 03):
+
+   ```hcl
+   output "alb_dns_name" {
+     description = "DNS publico do Application Load Balancer — URL da aplicacao"
+     value       = aws_lb.main.dns_name
+   }
+   ```
+
+   É esse output que os próximos módulos (05 e 07) usam via
+   `terraform output alb_dns_name` para acessar a aplicação.
 
 3. **`variables.tf`** — duas variáveis da Aula 03 ficam **órfãs**, sem
    nada que as use: `my_ip` (só existia para restringir o SSH da EC2,
@@ -294,7 +307,7 @@ pro Service `api`, que conecta no RDS.
 
 - [ ] `ec2.tf`, `user_data.sh.tpl`, `nginx-app.conf` removidos
 - [ ] `rds.tf` atualizado para referenciar `sg-ecs-tasks`
-- [ ] `outputs.tf` sem os outputs que dependiam da EC2
+- [ ] `outputs.tf` sem os outputs que dependiam da EC2, com `alb_dns_name` adicionado
 - [ ] Duas Task Definitions criadas, referenciando as imagens do ECR
 - [ ] Dois Services `RUNNING`, com `runningCount == desiredCount`
 - [ ] Os dois Target Groups do módulo 03 agora mostram targets saudáveis

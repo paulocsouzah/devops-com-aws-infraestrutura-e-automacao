@@ -9,8 +9,7 @@ resource "aws_vpc" "main" {
   }
 }
 
-# 2. Subnet publica — associada a uma AZ, com IP publico automatico.
-# E aqui que a EC2 da aplicacao mora.
+# 2. Subnet pública — associada a uma AZ, com IP público automático
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_cidr
@@ -22,7 +21,7 @@ resource "aws_subnet" "public" {
   }
 }
 
-# 3. Internet Gateway — porta de saida da VPC para a internet
+# 3. Internet Gateway — porta de saída da VPC para a internet
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -45,7 +44,7 @@ resource "aws_route_table" "public" {
   }
 }
 
-# 5. Associacao da Route Table com a subnet publica
+# 5. Associação da Route Table com a subnet pública
 resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
