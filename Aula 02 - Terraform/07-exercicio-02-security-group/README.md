@@ -2,7 +2,7 @@
 
 Com a rede pronta (módulo anterior), o próximo passo é decidir **quem
 pode falar com quem** — é isso que um Security Group faz. Vamos continuar
-**dentro do mesmo projeto** `terraform-rede` criado no módulo 06 (o
+**dentro da mesma pasta** [`00-pratica/`](../00-pratica/README.md) (o
 Terraform combina automaticamente todos os arquivos `.tf` de uma pasta),
 adicionando um novo arquivo.
 
@@ -38,10 +38,67 @@ a aplicação que o mundo deve acessar), então liberamos para todo mundo.
 
 ---
 
-## 📂 Arquivo deste módulo
+## 📂 Onde trabalhar
 
-- [`security-group.tf`](security-group.tf) — o recurso `aws_security_group`,
-  comentado. Copie este arquivo para dentro da pasta `terraform-rede`.
+Crie o arquivo `security-group.tf` dentro de
+[`00-pratica/`](../00-pratica/README.md):
+
+```hcl
+# security-group.tf
+# Security Group — SSH restrito ao meu IP, HTTP/HTTPS públicos.
+# Regras de Security Group são stateful: a resposta de uma conexão
+# de entrada permitida é liberada automaticamente na saída.
+resource "aws_security_group" "web" {
+  name        = "${var.project_name}-sg-web"
+  description = "Libera SSH (restrito ao meu IP) e HTTP/HTTPS (publico)"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "SSH apenas do meu IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${var.my_ip}/32"]
+  }
+
+  ingress {
+    description = "HTTP publico"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS publico"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Todo trafego de saida"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-sg-web"
+  }
+}
+```
+
+Aproveite e adicione o output correspondente em `outputs.tf`:
+
+```hcl
+output "security_group_id" {
+  description = "ID do Security Group criado"
+  value       = aws_security_group.web.id
+}
+```
 
 ---
 
@@ -61,7 +118,7 @@ Isso retorna algo como `203.0.113.42`. Guarde esse valor.
 
 ### 2. Adicionar a variável `my_ip`
 
-No arquivo `variables.tf` do projeto `terraform-rede`, adicione:
+No `variables.tf` de `00-pratica/`, adicione:
 
 ```hcl
 variable "my_ip" {
@@ -76,8 +133,10 @@ fixo esquecido no código (e possivelmente commitado no Git).
 
 ### 3. Informar o valor sem deixá-lo hardcoded no código versionado
 
-Crie um arquivo `terraform.tfvars` (não vai para o Git — já está no
-`.gitignore` do módulo 05):
+Dentro de `00-pratica/`, copie
+[`terraform.tfvars.example`](../00-pratica/terraform.tfvars.example)
+para `terraform.tfvars` (não vai para o Git — já está no `.gitignore`
+da pasta) e preencha:
 
 ```hcl
 my_ip = "203.0.113.42"
@@ -86,15 +145,14 @@ my_ip = "203.0.113.42"
 O Terraform carrega automaticamente qualquer `terraform.tfvars` presente
 na pasta, sem precisar de flag adicional.
 
-### 4. Copiar o `security-group.tf` para o projeto
+### 4. Criar o `security-group.tf`
 
-Copie o arquivo [`security-group.tf`](security-group.tf) deste módulo
-para dentro da pasta `terraform-rede`.
+Crie o arquivo com o conteúdo mostrado acima, dentro de `00-pratica/`.
 
 ### 5. Planejar e aplicar
 
 ```bash
-cd terraform-rede
+cd 00-pratica
 terraform fmt
 terraform validate
 terraform plan
@@ -120,7 +178,7 @@ Console da AWS → **EC2 → Security Groups** → confirme as 3 regras de
 - [ ] IP público descoberto com `curl https://checkip.amazonaws.com`
 - [ ] Variável `my_ip` adicionada em `variables.tf` (sem `default`)
 - [ ] `terraform.tfvars` criado com o valor do seu IP (**não commitado**)
-- [ ] `security-group.tf` copiado para dentro de `terraform-rede`
+- [ ] `security-group.tf` criado dentro de `00-pratica/`
 - [ ] `terraform plan` mostra 1 recurso novo (o SG), rede sem alterações
 - [ ] `terraform apply` concluído, SG conferido no Console
 

@@ -1,18 +1,15 @@
 # Exercício Final — terraform-aula02
 
-Chegou a hora de juntar **tudo** o que vimos nesta aula em um projeto só,
-do zero, com as suas próprias mãos.
+Chegou a hora de fechar a aula validando, de ponta a ponta, o projeto que
+você já vem construindo desde o módulo 06.
 
 Nos módulos anteriores você praticou cada peça isoladamente: rede (VPC,
 Subnet, Internet Gateway, Route Table), Security Group e uma instância
-EC2 usando o papel IAM da AWS Academy. Neste exercício final, essas
-peças se juntam em **um único projeto Terraform**, criado do zero em uma
-pasta separada.
-
-A pasta [terraform-aula02/](terraform-aula02/) contém a solução completa
-e comentada — use-a como gabarito se travar em algum passo, mas o
-objetivo é que **você refaça cada etapa por conta própria**, na sua
-máquina, digitando o código você mesmo.
+EC2 usando o papel IAM da AWS Academy. Diferente de outras aulas, aqui
+**não tem nada novo pra construir** — [`00-pratica/`](../00-pratica/README.md)
+já contém o projeto inteiro, montado peça por peça ao longo dos módulos
+anteriores. Este módulo é sobre **rodar de verdade, do zero, e
+documentar**.
 
 ---
 
@@ -44,9 +41,8 @@ Toda a infraestrutura abaixo, criada **inteiramente por código**, com um
 - **Servidor** — EC2 com IAM Instance Profile e key pair (`vockey`) já
   existentes na AWS Academy (módulo 08).
 
-Ou seja: este exercício não tem conteúdo novo — ele testa se você
-consegue **organizar, do zero, um projeto Terraform completo**,
-juntando tudo o que já funcionou em módulos separados.
+Ou seja: este exercício não tem conteúdo novo — ele testa se
+`00-pratica/` está completa e funcionando de ponta a ponta, do zero.
 
 ---
 
@@ -57,58 +53,39 @@ juntando tudo o que já funcionou em módulos separados.
 Sempre o primeiro passo do dia: Start Lab → AWS Details → atualizar
 `~/.aws/credentials` (veja
 [03-aws-academy-e-credenciais](../03-aws-academy-e-credenciais/README.md)
-se precisar relembrar). Aproveite e já baixe o `vockey.pem` (seção
-"SSH key" da mesma tela) — vamos usá-lo no passo 4.
+se precisar relembrar).
 
-### 2. Criar a estrutura de pastas
-
-```bash
-mkdir terraform-aula02
-cd terraform-aula02
-```
-
-Mova o `vockey.pem` baixado para dentro desta pasta.
+### 2. Conferir se `00-pratica/` está completa
 
 ```
-terraform-aula02/
+00-pratica/
 ├── main.tf                    # terraform {} + provider "aws"
-├── variables.tf                # todas as variáveis
+├── variables.tf                # todas as variáveis, inclusive my_ip
 ├── network.tf                  # VPC, Subnet, IGW, Route Table
 ├── security-group.tf           # Security Group
 ├── ec2.tf                      # AMI, key pair (vockey), EC2
 ├── outputs.tf                  # outputs de todos os recursos
-├── terraform.tfvars            # my_ip (NÃO commitar)
+├── terraform.tfvars            # my_ip preenchido (NÃO commitar)
 └── vockey.pem                   # baixado do Learner Lab (NÃO commitar)
 ```
 
-### 3. Recriar os arquivos `.tf`
+Se algum arquivo estiver faltando, volte no módulo correspondente
+(06, 07 ou 08) — é lá que cada um foi criado.
 
-Use os arquivos deste módulo como referência:
-[`main.tf`](terraform-aula02/main.tf),
-[`variables.tf`](terraform-aula02/variables.tf),
-[`network.tf`](terraform-aula02/network.tf),
-[`security-group.tf`](terraform-aula02/security-group.tf),
-[`ec2.tf`](terraform-aula02/ec2.tf),
-[`outputs.tf`](terraform-aula02/outputs.tf).
+### 3. Conferir credenciais e IP atualizados
 
-### 4. Descobrir seu IP e criar o `terraform.tfvars`
+O Lab pode ter expirado desde a última sessão. Atualize
+`~/.aws/credentials` e confirme que `my_ip` em `terraform.tvars` ainda
+é o seu IP atual:
 
 ```bash
 curl https://checkip.amazonaws.com
 ```
 
-Copie [`terraform.tfvars.example`](terraform-aula02/terraform.tfvars.example)
-para `terraform.tfvars` e preencha com o IP retornado.
-
-### 5. Adicionar o `.gitignore`
-
-Use como referência o [`.gitignore`](terraform-aula02/.gitignore) deste
-módulo — garante que `terraform.tfstate`, `terraform.tfvars` e a chave
-`.pem` nunca sejam commitados.
-
-### 6. Inicializar, validar e planejar
+### 4. Inicializar, validar e planejar
 
 ```bash
+cd 00-pratica
 terraform init
 terraform fmt
 terraform validate
@@ -119,7 +96,7 @@ Confira: o `plan` deve mostrar o total de recursos a criar (rede +
 security group + instância — a AMI, o IAM Instance Profile e o key pair
 `vockey` são `data`, apenas consultados).
 
-### 7. Aplicar
+### 5. Aplicar
 
 ```bash
 terraform apply
@@ -128,7 +105,7 @@ terraform apply
 Confirme com `yes`. Guarde os outputs, principalmente `instance_public_ip`
 e `ssh_command`.
 
-### 8. Conectar via SSH e validar
+### 6. Conectar via SSH e validar
 
 ```bash
 chmod 400 vockey.pem   # Linux/Mac (no Windows, o SSH já lida bem sem esse passo)
@@ -143,13 +120,13 @@ cat /etc/os-release
 exit
 ```
 
-### 9. Conferir tudo no Console
+### 7. Conferir tudo no Console
 
 Console da AWS → confirme visualmente: VPC, Subnet, Internet Gateway,
 Route Table, Security Group e a instância EC2 `running` — todos com os
 nomes/tags definidos no código.
 
-### 10. Destruir ao final
+### 8. Destruir ao final
 
 Depois de validar e coletar os prints para o relatório:
 
@@ -166,8 +143,8 @@ Academy é compartilhado entre todas as aulas do módulo.
 
 ## ✅ Checklist técnico
 
-- [ ] Pasta `terraform-aula02` criada com a estrutura de arquivos indicada
-- [ ] `terraform.tfvars` criado com o seu IP (não commitado)
+- [ ] `00-pratica/` completa (todos os arquivos dos módulos 06-08 presentes)
+- [ ] `terraform.tfvars` com o seu IP atual (não commitado)
 - [ ] `terraform init`, `fmt` e `validate` executados sem erro
 - [ ] `terraform plan` sem surpresas, `terraform apply` concluído
 - [ ] VPC, Subnet, IGW, Route Table, Security Group e EC2 conferidos no Console

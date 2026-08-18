@@ -28,10 +28,19 @@ Repare que esta aplicação evolui a mesma ideia da Aula 01
   servido por um Nginx **dentro do próprio container** (build multi-stage).
   Esse mesmo nginx interno também repassa tudo que chega em `/api/` para o
   container da API — ver `frontend/nginx.conf`.
-- **api** — Node/Express com duas rotas principais: `GET /usuarios` e
-  `POST /usuarios`, conectando no MySQL via `mysql2/promise` (mesma
-  biblioteca já usada na Aula 01). Não expõe nenhuma porta para o host —
-  só o container do frontend fala com ela, pela rede interna do Compose.
+- **api** — Node/Express com duas rotas principais: `GET /api/usuarios` e
+  `POST /api/usuarios` (o prefixo `/api` é proposital — veja a nota
+  abaixo), conectando no MySQL via `mysql2/promise` (mesma biblioteca já
+  usada na Aula 01). Não expõe nenhuma porta para o host — só o
+  container do frontend fala com ela, pela rede interna do Compose.
+
+> 💡 **Por que a rota é `/api/usuarios`, e não só `/usuarios`?** O nginx
+> do frontend repassa a requisição pro container da API preservando o
+> caminho completo (não remove o `/api/` do meio do caminho) — então é
+> a própria API quem precisa "morar" nesse caminho. Isso não é um
+> detalhe cosmético: é o que faz a mesma imagem da API funcionar sem
+> nenhuma alteração também na Aula 04 (ECS), onde o Application Load
+> Balancer tem exatamente esse mesmo comportamento.
 - **Nginx do host** (fora dos containers, instalado pelo User Data no
   módulo 05) tem uma única responsabilidade: receber todo o tráfego
   externo na porta 80 e repassar **tudo** para o container do frontend

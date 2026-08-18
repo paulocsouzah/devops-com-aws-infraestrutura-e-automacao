@@ -1,9 +1,9 @@
 # 4. Exercício 01 — Banco de Dados Gerenciado (RDS MySQL)
 
-Voltamos ao projeto `terraform-aula02` (Aula 02) para evoluí-lo. Antes de
-criar o banco, ele precisa de um pouco mais de rede — um RDS exige um
-**DB Subnet Group** cobrindo pelo menos **duas Availability Zones**,
-mesmo rodando uma única instância, sem réplica.
+Voltamos a [`00-pratica/`](../00-pratica/README.md) para evoluí-la.
+Antes de criar o banco, ela precisa de um pouco mais de rede — um RDS
+exige um **DB Subnet Group** cobrindo pelo menos **duas Availability
+Zones**, mesmo rodando uma única instância, sem réplica.
 
 ---
 
@@ -43,21 +43,14 @@ mesmo rodando uma única instância, sem réplica.
 
 ---
 
-## 📂 Arquivos deste módulo
+## 📂 Onde trabalhar
 
-- [`network-rds.tf`](network-rds.tf) — subnet privada (AZ2) e o DB
-  Subnet Group.
-- [`rds.tf`](rds.tf) — Security Group do banco e o `aws_db_instance`.
-- [`variables-rds.tf`](variables-rds.tf) — variáveis novas (`db_name`,
-  `db_username`, `db_password`, CIDR e AZ da subnet privada).
-
-Copie estes três arquivos para dentro do seu projeto `terraform-aula02`
-existente (ou de uma cópia dele) — eles se somam ao que já existe, não
-substituem. Repare que as variáveis novas ficam num arquivo **separado**
-(`variables-rds.tf`), justamente para não sobrescrever o `variables.tf`
-que você já tem desde a Aula 02 — o Terraform lê e combina **todos** os
-arquivos `.tf` de uma pasta, então o nome do arquivo não importa para
-ele, só para quem organiza o código.
+Dentro de [`00-pratica/`](../00-pratica/README.md), crie dois arquivos
+novos — [`network-rds.tf`](../00-pratica/network-rds.tf) (subnet privada
+e DB Subnet Group) e [`rds.tf`](../00-pratica/rds.tf) (Security Group do
+banco e a instância) — e **edite** o `variables.tf` que já existe,
+adicionando as variáveis novas (`availability_zone_b`,
+`private_subnet_cidr`, `db_name`, `db_username`, `db_password`).
 
 ---
 
@@ -166,9 +159,9 @@ resource "aws_db_instance" "main" {
 
 ### 1. Adicionar os arquivos e as variáveis
 
-Copie os três arquivos deste módulo para dentro do `terraform-aula02` e
-preencha `db_name`, `db_username` e `db_password` no seu
-`terraform.tfvars`.
+Crie `network-rds.tf` e `rds.tf`, edite `variables.tf` (variáveis
+novas) dentro de `00-pratica/`, e preencha `db_password` no seu
+`terraform.tfvars` (`db_name` e `db_username` já têm valor padrão).
 
 ### 2. Planejar
 

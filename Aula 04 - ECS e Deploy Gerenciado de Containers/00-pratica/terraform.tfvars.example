@@ -1,0 +1,7 @@
+# Copie este arquivo para "terraform.tfvars" (que NAO vai para o Git) e
+# preencha a senha do banco abaixo.
+#
+# Repare como esse arquivo ficou mais simples que o da Aula 03: nao tem
+# mais "my_ip" (sem SSH) nem "app_repo_url" (sem user_data/git clone).
+
+db_password = "SUA_SENHA_AQUI"

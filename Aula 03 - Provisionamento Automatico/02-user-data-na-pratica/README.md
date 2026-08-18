@@ -2,8 +2,13 @@
 
 Antes de ir direto para o cenário completo (RDS + app), vamos ver o
 mecanismo do User Data funcionando isoladamente, num script pequeno e
-fácil de conferir — a mesma EC2 do projeto `terraform-aula02` da Aula 02
-serve de base.
+fácil de conferir — a mesma EC2 que já está em
+[`00-pratica/`](../00-pratica/README.md) (trazida da Aula 02) serve de
+base.
+
+⚠️ O `user_data` que vamos adicionar agora é **temporário** — só para
+ver o mecanismo funcionando. No módulo 05 ele é substituído pelo
+`user_data` de verdade, que instala a aplicação completa.
 
 ---
 
@@ -42,13 +47,6 @@ resource "aws_instance" "app" {
 
 ---
 
-## 📂 Arquivo deste módulo
-
-- [`user_data.sh`](user_data.sh) — o script de teste completo, pronto
-  para copiar para dentro do seu `terraform-aula02`.
-
----
-
 ## 🧪 Primeiro teste: um script simples
 
 Vamos provar que o mecanismo funciona antes de complicar. Um script que
@@ -71,11 +69,10 @@ echo "<h1>Provisionado automaticamente via User Data 🎉</h1>" > /usr/share/ngi
 
 ### Passo a passo
 
-1. Dentro do seu projeto `terraform-aula02` (ou uma cópia dele, se
-   preferir preservar o original), crie o arquivo `user_data.sh` na raiz
-   com o conteúdo acima.
+1. Dentro de [`00-pratica/`](../00-pratica/README.md), crie o arquivo
+   `user_data.sh` com o conteúdo acima.
 2. Adicione a linha `user_data = file("${path.module}/user_data.sh")` ao
-   `aws_instance` no `ec2.tf`.
+   `aws_instance` em `00-pratica/ec2.tf`.
 3. Rode:
 
    ```bash

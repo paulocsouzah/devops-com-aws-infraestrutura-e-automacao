@@ -14,25 +14,27 @@ rodando.
 
 | Pasta | Conteúdo |
 |-------|----------|
+| [00-pratica](00-pratica/README.md) | O projeto Terraform real desta aula — nasce como cópia do `00-pratica` da Aula 02 |
 | [01-conceitos](01-conceitos/README.md) | User Data, Cloud-Init, por que banco de dados gerenciado (RDS) em vez de container |
 | [02-user-data-na-pratica](02-user-data-na-pratica/README.md) | Sintaxe do `user_data` no Terraform, primeiro script de teste, onde ver os logs de execução |
-| [03-preparando-a-aplicacao](03-preparando-a-aplicacao/README.md) | A aplicação da aula: React (frontend) + Node/Express (api), Dockerfiles e `docker-compose.yml` |
+| [03-preparando-a-aplicacao](03-preparando-a-aplicacao/README.md) | A aplicação da aula: React (frontend) + Node/Express (api), Dockerfiles e `docker-compose.yml` — repositório separado, fora de `00-pratica` |
 | [04-exercicio-01-rds](04-exercicio-01-rds/README.md) | Expandir a rede (2ª subnet/AZ) e criar o banco gerenciado: RDS MySQL |
 | [05-exercicio-02-provisionamento-automatico](05-exercicio-02-provisionamento-automatico/README.md) | `user_data` completo: instala Docker, Compose, Git e Nginx, clona o repositório e sobe a aplicação sozinho |
 | [06-organizacao-e-boas-praticas](06-organizacao-e-boas-praticas/README.md) | Dependências entre recursos, tempo de provisionamento do RDS x EC2, troubleshooting de Cloud-Init |
-| [07-exercicio-final](07-exercicio-final/README.md) | Projeto integrador `terraform-aula03` — infraestrutura completa + aplicação no ar sem nenhum SSH manual — entrega em PDF |
+| [07-exercicio-final](07-exercicio-final/README.md) | Validação de ponta a ponta de `00-pratica` — infraestrutura completa + aplicação no ar sem nenhum SSH manual — entrega em PDF |
 
 ## ▶️ Como usar
 
-Siga as pastas na ordem numérica — cada uma tem um `README.md` com a
-explicação, exercícios práticos e, quando aplicável, os arquivos prontos
-e comentados (`.tf`, scripts, código da aplicação) para servir de
-referência ou gabarito.
+Siga as pastas na ordem numérica — cada módulo de exercício edita os
+arquivos dentro de [`00-pratica/`](00-pratica/README.md), que é o
+projeto real desta aula. Não existe "recriar do zero" no exercício
+final — ele só valida o que já foi construído ao longo da aula.
 
 **Pré-requisitos:**
 
 - Ter concluído a [Aula 02 - Terraform](<../Aula 02 - Terraform/README.md>)
-  — vamos evoluir o mesmo projeto `terraform-aula02`.
+  — copie o `00-pratica` de lá para começar esta aula (veja o README de
+  [00-pratica](00-pratica/README.md)).
 - Acesso ativo ao **AWS Academy Learner Lab** (credenciais renovadas no
   início da sessão, como nas aulas anteriores).
 - Docker e Terraform já instalados (Aulas 01 e 02).

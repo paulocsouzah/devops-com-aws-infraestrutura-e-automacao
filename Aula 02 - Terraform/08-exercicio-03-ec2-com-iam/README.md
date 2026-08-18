@@ -2,7 +2,8 @@
 
 Rede pronta, porta liberada — agora vamos finalmente subir um **servidor**
 dentro dessa rede, usando o papel de IAM e o par de chaves que já vêm
-prontos na AWS Academy. Continuamos no mesmo projeto `terraform-rede`.
+prontos na AWS Academy. Continuamos na mesma pasta
+[`00-pratica/`](../00-pratica/README.md).
 
 ---
 
@@ -50,17 +51,75 @@ pronto, chamado **`vockey`**, disponível para download na própria tela
 do Learner Lab.
 
 > 💡 **Isso é só uma regra desta plataforma de estudo.** Em um projeto
-> real, fora da AWS Academy, o normal é o Terraform gerar (ou importar)
-> a própria chave — inclusive deixamos esse código comentado no final do
-> [`ec2.tf`](ec2.tf) deste módulo, como referência para quando vocês
-> estiverem trabalhando em uma conta AWS de verdade, no mercado.
+> real, fora da AWS Academy, o normal é o Terraform **gerar ou importar**
+> a própria chave (com os providers `tls` + `hashicorp/local`, ou
+> importando uma chave já existente com `aws_key_pair`), em vez de
+> consultar uma que já vem pronta.
 
 ---
 
-## 📂 Arquivo deste módulo
+## 📂 Onde trabalhar
 
-- [`ec2.tf`](ec2.tf) — AMI, key pair (via `data source`), instância e
-  outputs, comentados. Copie para dentro da pasta `terraform-rede`.
+Crie o arquivo `ec2.tf` dentro de [`00-pratica/`](../00-pratica/README.md):
+
+```hcl
+# ec2.tf
+# AMI mais recente do Amazon Linux 2023, buscada dinamicamente
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-x86_64"]
+  }
+}
+
+# Papel IAM já existente na AWS Academy — reaproveitado, nunca criado
+data "aws_iam_instance_profile" "lab_profile" {
+  name = "LabInstanceProfile"
+}
+
+# Key pair já existente na AWS Academy ("vockey") — o Learner Lab não
+# permite criar um Key Pair novo por código (mesma restrição do IAM
+# Role acima). Baixe o "vockey.pem" pela tela do Learner Lab (seção
+# "SSH key" > Download PEM) e salve dentro de 00-pratica/ antes do apply.
+# Fora da AWS Academy, o normal seria o próprio Terraform gerar/importar
+# a chave (com os providers "tls" + "hashicorp/local").
+data "aws_key_pair" "vockey" {
+  key_name = "vockey"
+}
+
+# Instância EC2 — usa a subnet e o security group definidos nos
+# outros arquivos deste mesmo projeto, e o instance profile e o key
+# pair da AWS Academy referenciados acima
+resource "aws_instance" "web" {
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.web.id]
+  key_name               = data.aws_key_pair.vockey.key_name
+  iam_instance_profile   = data.aws_iam_instance_profile.lab_profile.name
+
+  tags = {
+    Name = "${var.project_name}-ec2-web"
+  }
+}
+```
+
+E os dois outputs novos, em `outputs.tf`:
+
+```hcl
+output "instance_public_ip" {
+  description = "IP público da instância EC2 criada"
+  value       = aws_instance.web.public_ip
+}
+
+output "ssh_command" {
+  description = "Comando pronto para conectar via SSH (rode a partir da pasta onde salvou o vockey.pem)"
+  value       = "ssh -i vockey.pem ec2-user@${aws_instance.web.public_ip}"
+}
+```
 
 ---
 
@@ -73,23 +132,21 @@ Na tela do seu Learner Lab (a mesma onde você pegou as credenciais em
 **"Download PEM"** (Linux/Mac/Windows com OpenSSH) — só use "Download
 PPK" se for conectar via PuTTY no Windows.
 
-Salve o arquivo `vockey.pem` dentro da pasta do seu projeto
-`terraform-rede`.
+Salve o arquivo `vockey.pem` dentro de `00-pratica/`.
 
 > ⚠️ Essa chave é gerada **por sessão do Lab** — se você encerrar o Lab
 > e iniciar um novo em outro dia, pode ser necessário baixar o
 > `vockey.pem` de novo (o arquivo antigo deixa de funcionar).
 
-### 2. Copiar o `ec2.tf` para o projeto
+### 2. Criar o `ec2.tf`
 
-Copie o arquivo [`ec2.tf`](ec2.tf) deste módulo para dentro da pasta
-`terraform-rede` (o `required_providers` do projeto não muda — este
-módulo usa só o provider `aws`, que você já tem desde o módulo 05).
+Crie o arquivo com o conteúdo mostrado acima, dentro de `00-pratica/`
+(o `required_providers` não muda — continua usando só o provider `aws`).
 
 ### 3. Planejar e aplicar
 
 ```bash
-cd terraform-rede
+cd 00-pratica
 terraform fmt
 terraform validate
 terraform plan
@@ -141,15 +198,16 @@ confira, na aba **Security**, que o `IAM Role` mostrado é o
 
 ### 6. Manter de pé (por enquanto!)
 
-⚠️ Assim como no módulo 06, **não rode `terraform destroy` ainda** — este
-mesmo projeto vira a base do exercício final.
+⚠️ Assim como no módulo 06, **não rode `terraform destroy` ainda** —
+`00-pratica/` já está completa e é ela mesma quem vira a base do
+exercício final (módulo 09), sem precisar recriar nada em outro lugar.
 
 ---
 
 ## ✅ Checklist técnico
 
-- [ ] `vockey.pem` baixado do Learner Lab e salvo dentro de `terraform-rede`
-- [ ] `ec2.tf` copiado para dentro de `terraform-rede`
+- [ ] `vockey.pem` baixado do Learner Lab e salvo dentro de `00-pratica/`
+- [ ] `ec2.tf` criado dentro de `00-pratica/`, com os dois outputs novos em `outputs.tf`
 - [ ] `terraform plan` mostra 1 recurso novo (a instância)
 - [ ] `terraform apply` concluído, `instance_public_ip` exibido
 - [ ] Conexão SSH bem-sucedida usando o `vockey.pem`

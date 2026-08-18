@@ -4,6 +4,7 @@
 // variavel de ambiente, nunca fixo no codigo (ver README do modulo 03).
 // =============================================================================
 
+const os = require('os');
 const express = require('express');
 const mysql = require('mysql2/promise');
 
@@ -11,6 +12,13 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
+
+// Identificador desta instancia: no Fargate (modo de rede awsvpc), cada
+// task recebe seu proprio hostname, unico por task — util para PROVAR
+// visualmente que o Load Balancer distribui requisicoes entre tasks
+// diferentes (Aula 04, modulo 05). Funciona igual localmente: cada
+// container do Docker tambem tem hostname proprio.
+const instanceId = os.hostname();
 
 const dbConfig = {
   host: process.env.DB_HOST,
@@ -62,12 +70,19 @@ async function iniciar() {
   });
 }
 
-// Rota simples so para confirmar que a API esta de pe.
+// Rota simples so para confirmar que a API esta de pe. Fica em "/" (sem
+// prefixo) de proposito: e essa rota que o health check do Target Group
+// do ALB chama diretamente (Aula 04), sem passar por nenhum roteamento.
 app.get('/', (req, res) => {
   res.json({ mensagem: 'API Node.js rodando 🚀', banco: dbConfig.host });
 });
 
-app.get('/usuarios', async (req, res) => {
+// As rotas de negocio ficam sob "/api" — tanto o nginx do frontend
+// (Aula 03, proxy_pass com variavel) quanto o Application Load Balancer
+// (Aula 04, listener rule "/api/*") encaminham a requisicao para a api
+// SEM remover esse prefixo, entao e a propria aplicacao quem precisa
+// "morar" nesse caminho, nao o proxy na frente dela.
+app.get('/api/usuarios', async (req, res) => {
   try {
     const [linhas] = await pool.query('SELECT id, nome, email FROM usuarios ORDER BY id DESC');
     res.json(linhas);
@@ -77,7 +92,64 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
-app.post('/usuarios', async (req, res) => {
+// Identifica qual instancia (task) respondeu — chame varias vezes
+// seguidas contra o ALB e observe o campo "instancia" mudando entre as
+// respostas: e o Load Balancer distribuindo entre tasks diferentes.
+app.get('/api/status', (req, res) => {
+  res.json({
+    instancia: instanceId,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// -----------------------------------------------------------------------------
+// Endpoint de estresse — SO PARA FINS DIDATICOS (Aula 04, modulo 05).
+// Gera carga real de CPU (e, opcionalmente, memoria) por um tempo
+// controlado, para provocar o Auto Scaling de forma rapida e repetivel,
+// sem depender de milhares de requisicoes reais de negocio.
+//
+// O trabalho de CPU e feito em FATIAS pequenas (setImmediate entre
+// elas) de proposito: o Node.js e single-threaded, e um laco síncrono
+// longo travaria o event loop inteiro — inclusive as respostas ao
+// health check do ALB, o que derrubaria a task no meio da demonstracao.
+// Fatiando o trabalho, o event loop sempre tem brechas para atender
+// outras requisicoes (como o proprio health check) entre uma fatia e
+// outra.
+// -----------------------------------------------------------------------------
+app.get('/api/stress', (req, res) => {
+  const duracaoMs = Math.min(Math.max(Number(req.query.duracao_ms) || 5000, 100), 30000);
+  const memoriaMb = Math.min(Math.max(Number(req.query.memoria_mb) || 0, 0), 100);
+
+  // Aloca e mantem memoria referenciada durante o teste — libera no
+  // final para o garbage collector poder recuperar. Cuidado ao exagerar
+  // no memoria_mb: a task tem so 512MB no total (Aula 04); passar disso
+  // derruba o container por falta de memoria (OOMKilled) — o que
+  // tambem e uma licao real sobre limites de recursos.
+  let buffers = [];
+  for (let i = 0; i < memoriaMb; i++) buffers.push(Buffer.alloc(1024 * 1024));
+
+  const fim = Date.now() + duracaoMs;
+  function trabalhar() {
+    const fatiaFim = Date.now() + 40;
+    while (Date.now() < fatiaFim && Date.now() < fim) {
+      Math.sqrt(Math.random() * Math.random());
+    }
+    if (Date.now() < fim) {
+      setImmediate(trabalhar);
+    } else {
+      buffers = null;
+      res.json({
+        instancia: instanceId,
+        duracao_ms: duracaoMs,
+        memoria_mb: memoriaMb,
+        mensagem: 'stress concluido',
+      });
+    }
+  }
+  trabalhar();
+});
+
+app.post('/api/usuarios', async (req, res) => {
   const { nome, email } = req.body || {};
   if (!nome || !email) {
     return res.status(400).json({ erro: 'nome e email sao obrigatorios' });

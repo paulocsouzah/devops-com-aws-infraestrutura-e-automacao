@@ -1,19 +1,14 @@
 # Exercício Final — terraform-aula03
 
-Chegou a hora de juntar **tudo** o que vimos nesta aula em um projeto só,
-do zero, com as suas próprias mãos — do mesmo jeito que fizemos na Aula
-02.
+Chegou a hora de fechar a aula validando, de ponta a ponta, o projeto que
+você já vem construindo desde o módulo 02.
 
 Nos módulos anteriores você praticou cada peça isoladamente: User Data
 básico (módulo 02), a aplicação React + Node (módulo 03), o RDS MySQL
-(módulo 04) e o provisionamento automático completo (módulo 05). Neste
-exercício final, essas peças se juntam em **um único projeto Terraform**,
-criado do zero em uma pasta separada.
-
-A pasta [terraform-aula03/](terraform-aula03/) contém a solução completa
-e comentada — use-a como gabarito se travar em algum passo, mas o
-objetivo é que **você refaça cada etapa por conta própria**, na sua
-máquina, digitando o código você mesmo.
+(módulo 04) e o provisionamento automático completo (módulo 05). Diferente
+de outras aulas, aqui **não tem nada novo pra construir** —
+[`00-pratica/`](../00-pratica/README.md) já contém o projeto inteiro.
+Este módulo é sobre **rodar de verdade, do zero, e documentar**.
 
 ---
 
@@ -55,10 +50,8 @@ que a imagem simplifica — **Internet Gateway/Route Table** e os
   (Docker, Compose, Git, Nginx) e sobe a aplicação `app-aula03`
   (frontend React + API Node), já conectada ao RDS (módulo 05).
 
-Ou seja: este exercício não tem conceito novo — ele testa se você
-consegue **organizar, do zero, um projeto completo de infraestrutura +
-provisionamento automático**, juntando tudo o que já funcionou em
-módulos separados.
+Ou seja: este exercício não tem conceito novo — ele testa se
+`00-pratica/` está completa e funcionando de ponta a ponta, do zero.
 
 ---
 
@@ -67,26 +60,18 @@ módulos separados.
 ### 1. Iniciar o Lab e atualizar as credenciais
 
 Sempre o primeiro passo do dia: Start Lab → AWS Details → atualizar
-`~/.aws/credentials`. Baixe também o `vockey.pem` (seção "SSH key" da
-mesma tela).
+`~/.aws/credentials`.
 
 ### 2. Confirmar que a aplicação está pronta
 
-Antes de mexer no Terraform, confirme que o repositório `app-aula03`
-(módulo 03) está publicado no GitHub e que você já testou localmente que
-ele sobe e funciona com `docker compose up -d --build`.
+Confirme que o repositório `app-aula03` (módulo 03) está publicado no
+GitHub e que você já testou localmente que ele sobe e funciona com
+`docker compose up -d --build`.
 
-### 3. Criar a estrutura de pastas
-
-```bash
-mkdir terraform-aula03
-cd terraform-aula03
-```
-
-Mova o `vockey.pem` baixado para dentro desta pasta.
+### 3. Conferir se `00-pratica/` está completa
 
 ```
-terraform-aula03/
+00-pratica/
 ├── main.tf                    # terraform {} + provider "aws"
 ├── variables.tf                # todas as variáveis
 ├── network.tf                  # VPC, Subnet pública, IGW, Route Table
@@ -97,44 +82,23 @@ terraform-aula03/
 ├── user_data.sh.tpl            # script de provisionamento automático
 ├── nginx-app.conf              # config do Nginx (reverse proxy)
 ├── outputs.tf                   # outputs de todos os recursos
-├── terraform.tfvars            # my_ip, db_name, db_username, db_password, app_repo_url (NÃO commitar)
-└── vockey.pem                   # baixado do Learner Lab (NÃO commitar)
+├── terraform.tfvars            # my_ip, db_password, app_repo_url (NÃO commitar)
+└── vockey.pem                   # trazido da Aula 02 (NÃO commitar)
 ```
 
-### 4. Recriar os arquivos `.tf` e os scripts
+Se algo estiver faltando, volte no módulo correspondente (02, 04 ou 05).
 
-Use os arquivos deste módulo como referência:
-[`main.tf`](terraform-aula03/main.tf),
-[`variables.tf`](terraform-aula03/variables.tf),
-[`network.tf`](terraform-aula03/network.tf),
-[`network-rds.tf`](terraform-aula03/network-rds.tf),
-[`security-group.tf`](terraform-aula03/security-group.tf),
-[`rds.tf`](terraform-aula03/rds.tf),
-[`ec2.tf`](terraform-aula03/ec2.tf),
-[`user_data.sh.tpl`](terraform-aula03/user_data.sh.tpl),
-[`nginx-app.conf`](terraform-aula03/nginx-app.conf),
-[`outputs.tf`](terraform-aula03/outputs.tf).
+### 4. Conferir credenciais, IP e `terraform.tfvars`
 
-### 5. Descobrir seu IP e criar o `terraform.tfvars`
+O Lab pode ter expirado desde a última sessão — atualize
+`~/.aws/credentials`, confirme que `my_ip` ainda é o seu IP atual
+(`curl https://checkip.amazonaws.com`) e que `app_repo_url` aponta pro
+seu repositório `app-aula03` no GitHub.
+
+### 5. Inicializar, validar e planejar
 
 ```bash
-curl https://checkip.amazonaws.com
-```
-
-Copie [`terraform.tfvars.example`](terraform-aula03/terraform.tfvars.example)
-para `terraform.tfvars` e preencha `my_ip`, `db_password` e
-`app_repo_url` (a URL HTTPS do seu repositório `app-aula03` no GitHub).
-`db_name` e `db_username` já têm valores padrão em `variables.tf` — só
-sobrescreva se quiser nomes diferentes.
-
-### 6. Adicionar o `.gitignore`
-
-Garanta que `terraform.tfstate*`, `terraform.tfvars` e `*.pem` nunca
-sejam commitados — igual à Aula 02.
-
-### 7. Inicializar, validar e planejar
-
-```bash
+cd 00-pratica
 terraform init
 terraform fmt
 terraform validate
@@ -144,7 +108,7 @@ terraform plan
 Confira: o `plan` deve mostrar o total de recursos a criar (rede + RDS +
 security groups + instância).
 
-### 8. Aplicar
+### 6. Aplicar
 
 ```bash
 terraform apply
@@ -154,19 +118,19 @@ Confirme com `yes`. ⏳ **O RDS demora 5-10 minutos** — é normal e
 esperado, como visto no módulo 04. Guarde os outputs, principalmente
 `instance_public_ip` e `db_endpoint`.
 
-### 9. Validar a aplicação no navegador
+### 7. Validar a aplicação no navegador
 
 Acesse `http://<instance_public_ip>`. Cadastre pelo menos um usuário
 pela tela e confirme que ele aparece na listagem (prova de que o
 caminho completo — React → Nginx → API → RDS — está funcionando).
 
-### 10. Conferir tudo no Console
+### 8. Conferir tudo no Console
 
 Console da AWS → confirme visualmente: VPC, as duas Subnets (pública e
 privada), Security Groups, a instância EC2 `running` e o banco RDS
 `Available`, sem IP público.
 
-### 11. Destruir ao final
+### 9. Destruir ao final
 
 Depois de validar e coletar os prints para o relatório:
 
@@ -184,9 +148,9 @@ mais do que uma EC2 parada.
 
 ## ✅ Checklist técnico
 
-- [ ] Pasta `terraform-aula03` criada com a estrutura de arquivos indicada
+- [ ] `00-pratica/` completa (todos os arquivos dos módulos 02, 04 e 05 presentes)
 - [ ] Repositório `app-aula03` publicado no GitHub e testado localmente
-- [ ] `terraform.tfvars` preenchido (não commitado)
+- [ ] `terraform.tfvars` com o seu IP atual e `app_repo_url` (não commitado)
 - [ ] `terraform init`, `fmt` e `validate` executados sem erro
 - [ ] `terraform plan` sem surpresas, `terraform apply` concluído
 - [ ] RDS `Available`, sem IP público, conferido no Console

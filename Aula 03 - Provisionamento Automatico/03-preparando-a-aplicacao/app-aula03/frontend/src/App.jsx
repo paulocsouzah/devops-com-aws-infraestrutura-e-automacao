@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 // certa (container local, ou EC2 em producao) e o nginx que fica na
 // frente da aplicacao, nao o React.
 const API_URL = '/api/usuarios';
+const STATUS_URL = '/api/status';
 
 function App() {
   const [usuarios, setUsuarios] = useState([]);
@@ -11,6 +12,20 @@ function App() {
   const [email, setEmail] = useState('');
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
+  const [status, setStatus] = useState(null);
+
+  // So pra deixar visivel QUAL instancia (task) respondeu — clique
+  // repetido em "Consultar de novo" e observe o valor mudando quando
+  // houver mais de uma task atras do Load Balancer (Aula 04, modulo 05).
+  async function consultarStatus() {
+    try {
+      const resposta = await fetch(STATUS_URL);
+      const dados = await resposta.json();
+      setStatus(dados);
+    } catch {
+      setStatus(null);
+    }
+  }
 
   async function carregarUsuarios() {
     try {
@@ -29,6 +44,7 @@ function App() {
 
   useEffect(() => {
     carregarUsuarios();
+    consultarStatus();
   }, []);
 
   async function handleSubmit(event) {
@@ -78,6 +94,15 @@ function App() {
       </form>
 
       {erro && <p className="erro">⚠️ {erro}</p>}
+
+      <div className="status-instancia">
+        <span>
+          Atendido por: <code>{status ? status.instancia : '...'}</code>
+        </span>
+        <button type="button" onClick={consultarStatus}>
+          🔄 Consultar de novo
+        </button>
+      </div>
 
       <h2>Usuários cadastrados</h2>
       {carregando ? (

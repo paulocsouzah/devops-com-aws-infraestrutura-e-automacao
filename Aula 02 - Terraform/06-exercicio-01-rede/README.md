@@ -49,33 +49,159 @@ Internet
 
 ---
 
-## 📂 Arquivos deste módulo
+## 📂 Onde trabalhar
 
-- [`main.tf`](main.tf) — os 5 recursos (VPC, Subnet, IGW, Route Table,
+A partir de agora, todo o código desta aula vive em
+[`00-pratica/`](../00-pratica/README.md) — é lá que você vai criar os
+arquivos abaixo, digitando o código você mesmo (é digitando que o
+conteúdo fixa):
+
+- `main.tf` — bloco `terraform {}` + `provider "aws"`.
+- `network.tf` — os 5 recursos de rede (VPC, Subnet, IGW, Route Table,
   associação), comentados.
-- [`variables.tf`](variables.tf) — CIDRs, região e AZ parametrizados.
-- [`outputs.tf`](outputs.tf) — IDs dos recursos criados, para conferência.
+- `variables.tf` — CIDRs, região e AZ parametrizados.
+- `outputs.tf` — IDs dos recursos criados, para conferência.
 
-Use esses arquivos como referência/gabarito, mas **crie a sua própria
-pasta e digite o código você mesmo** — é digitando que o conteúdo fixa.
+```hcl
+# main.tf
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+```
+
+```hcl
+# network.tf
+# 1. VPC — a "rede privada" onde tudo o mais vai morar dentro
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = "${var.project_name}-vpc"
+  }
+}
+
+# 2. Subnet pública — sub-rede dentro da VPC, associada a uma AZ específica.
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = var.availability_zone
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "${var.project_name}-subnet-public"
+  }
+}
+
+# 3. Internet Gateway — "porta de saída" da VPC para a internet.
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.project_name}-igw"
+  }
+}
+
+# 4. Route Table — "qualquer destino que eu não souber, manda para o IGW".
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "${var.project_name}-rt-public"
+  }
+}
+
+# 5. Associação — liga a Route Table à subnet pública.
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}
+```
+
+```hcl
+# variables.tf
+variable "aws_region" {
+  description = "Região AWS onde os recursos serão criados"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "availability_zone" {
+  description = "Availability Zone onde a subnet pública será criada"
+  type        = string
+  default     = "us-east-1a"
+}
+
+variable "vpc_cidr" {
+  description = "Faixa de IPs (CIDR) da VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "public_subnet_cidr" {
+  description = "Faixa de IPs (CIDR) da subnet pública"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "project_name" {
+  description = "Prefixo usado no nome/tags de todos os recursos deste projeto"
+  type        = string
+  default     = "aula02"
+}
+```
+
+```hcl
+# outputs.tf
+output "vpc_id" {
+  description = "ID da VPC criada"
+  value       = aws_vpc.main.id
+}
+
+output "subnet_id" {
+  description = "ID da subnet pública criada"
+  value       = aws_subnet.public.id
+}
+
+output "internet_gateway_id" {
+  description = "ID do Internet Gateway criado"
+  value       = aws_internet_gateway.main.id
+}
+
+output "route_table_id" {
+  description = "ID da Route Table pública criada"
+  value       = aws_route_table.public.id
+}
+```
 
 ---
 
 ## 🛠️ Passo a passo
 
-### 1. Criar o projeto
+### 1. Criar os arquivos
 
-```bash
-mkdir terraform-rede
-cd terraform-rede
-```
-
-Recrie os três arquivos (`main.tf`, `variables.tf`, `outputs.tf`) com o
-conteúdo deste módulo.
+Dentro de `00-pratica/`, crie os quatro arquivos (`main.tf`,
+`network.tf`, `variables.tf`, `outputs.tf`) com o conteúdo acima.
 
 ### 2. Inicializar e validar
 
 ```bash
+cd 00-pratica
 terraform init
 terraform fmt
 terraform validate
@@ -110,14 +236,13 @@ Table aparecem lá, com os nomes das tags que você definiu.
 
 ⚠️ **Não rode `terraform destroy` ainda neste módulo** — vamos
 reaproveitar essa rede no próximo exercício (Security Group) e no
-seguinte (EC2). Deixe o projeto `terraform-rede` como está, vamos voltar
-a ele.
+seguinte (EC2). Deixe `00-pratica/` como está, vamos voltar a ela.
 
 ---
 
 ## ✅ Checklist técnico
 
-- [ ] `terraform-rede/` criado com os 3 arquivos `.tf`
+- [ ] `main.tf`, `network.tf`, `variables.tf` e `outputs.tf` criados em `00-pratica/`
 - [ ] `terraform init`, `fmt` e `validate` executados sem erro
 - [ ] `terraform plan` mostra 5 recursos a criar
 - [ ] `terraform apply` concluído com sucesso, outputs exibidos

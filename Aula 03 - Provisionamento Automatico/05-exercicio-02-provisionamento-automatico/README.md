@@ -45,14 +45,20 @@ a AWS.
 
 ---
 
-## 📂 Arquivos deste módulo
+## 📂 Onde trabalhar
 
-- [`user_data.sh.tpl`](user_data.sh.tpl) — o script completo, comentado.
-- [`nginx-app.conf`](nginx-app.conf) — configuração do Nginx do host
-  (reverse proxy), copiada para dentro da instância pelo próprio script.
-- [`ec2.tf`](ec2.tf) — versão atualizada, usando `templatefile()`.
-- [`variables-app.tf`](variables-app.tf) — a variável nova
-  (`app_repo_url`), num arquivo separado, pelo mesmo motivo do módulo 04.
+Dentro de [`00-pratica/`](../00-pratica/README.md):
+
+- Crie [`user_data.sh.tpl`](../00-pratica/user_data.sh.tpl) — o script
+  completo, comentado.
+- Crie [`nginx-app.conf`](../00-pratica/nginx-app.conf) — configuração
+  do Nginx do host (reverse proxy), copiada para dentro da instância
+  pelo próprio script.
+- **Substitua** `user_data.sh` (do módulo 02) por `user_data.sh.tpl` —
+  apague o arquivo antigo, ele não é mais usado.
+- **Edite** [`ec2.tf`](../00-pratica/ec2.tf) para usar `templatefile()`
+  em vez do `file()` do módulo 02.
+- **Edite** `variables.tf`, adicionando a variável nova `app_repo_url`.
 
 ---
 
@@ -176,9 +182,9 @@ para ela.
 
 ### 1. Adicionar os arquivos
 
-Copie `user_data.sh.tpl`, `nginx-app.conf` e `variables-app.tf` para
-dentro do `terraform-aula02`, e substitua o `ec2.tf` pela versão deste
-módulo (usa `templatefile()` em vez de `file()`). Preencha
+Em `00-pratica/`: crie `user_data.sh.tpl` e `nginx-app.conf`, apague o
+`user_data.sh` do módulo 02, atualize `ec2.tf` para usar
+`templatefile()`, e adicione `app_repo_url` em `variables.tf`. Preencha
 `app_repo_url` no seu `terraform.tfvars` com a URL do seu `app-aula03`
 (módulo 03).
 
