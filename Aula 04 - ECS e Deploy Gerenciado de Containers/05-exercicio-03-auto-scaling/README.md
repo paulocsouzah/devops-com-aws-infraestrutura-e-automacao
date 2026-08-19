@@ -41,7 +41,45 @@ Dentro de [`00-pratica/`](../00-pratica/README.md), crie
 memória para os dois Services) e `dashboard.js` (gera carga real
 contra a API e desenha, ao vivo, quem está respondendo e como o ECS
 está reagindo) — e **edite** `variables.tf`, adicionando a capacidade
-mínima/máxima e os alvos de CPU/memória.
+mínima/máxima e os alvos de CPU/memória (pode copiar direto):
+
+```hcl
+variable "frontend_min_capacity" {
+  description = "Capacidade minima (numero de tasks) do Auto Scaling do Service frontend"
+  type        = number
+  default     = 1
+}
+
+variable "frontend_max_capacity" {
+  description = "Capacidade maxima (numero de tasks) do Auto Scaling do Service frontend"
+  type        = number
+  default     = 3
+}
+
+variable "api_min_capacity" {
+  description = "Capacidade minima (numero de tasks) do Auto Scaling do Service api"
+  type        = number
+  default     = 1
+}
+
+variable "api_max_capacity" {
+  description = "Capacidade maxima (numero de tasks) do Auto Scaling do Service api"
+  type        = number
+  default     = 3
+}
+
+variable "target_cpu_percent" {
+  description = "Utilizacao media de CPU (%) que o Auto Scaling procura manter em cada Service"
+  type        = number
+  default     = 40
+}
+
+variable "target_memory_percent" {
+  description = "Utilizacao media de memoria (%) que o Auto Scaling procura manter no Service api"
+  type        = number
+  default     = 70
+}
+```
 
 ```hcl
 resource "aws_appautoscaling_target" "api" {
@@ -89,8 +127,59 @@ resource "aws_appautoscaling_policy" "api_memory" {
 }
 ```
 
-(o Target e a Policy de CPU do `frontend` seguem o mesmo padrão — veja
-o arquivo completo)
+O Target e a Policy de CPU do `frontend` seguem exatamente o mesmo
+padrão do `api` acima — só sem a policy de memória, já que o frontend
+não tem endpoint de estresse próprio:
+
+```hcl
+resource "aws_appautoscaling_target" "frontend" {
+  max_capacity       = var.frontend_max_capacity
+  min_capacity       = var.frontend_min_capacity
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.frontend.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "frontend_cpu" {
+  name               = "${var.project_name}-frontend-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.frontend.resource_id
+  scalable_dimension = aws_appautoscaling_target.frontend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.frontend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value       = var.target_cpu_percent
+    scale_in_cooldown  = 60
+    scale_out_cooldown = 60
+  }
+}
+```
+
+> ⚠️ **Conflito Terraform × Auto Scaling em `desired_count`:** a partir
+> daqui, o Auto Scaling passa a mudar `desired_count` dos dois Services
+> diretamente na AWS, por fora do Terraform. Sem o ajuste abaixo, todo
+> `terraform plan` depois de um scale-out vai mostrar um diff querendo
+> **reverter** `desired_count` de volta pro valor de
+> `var.frontend_desired_count`/`var.api_desired_count` — e um `apply`
+> nesse estado derruba as tasks que o Auto Scaling acabou de subir.
+> Volte em `ecs-services.tf` (módulo 04) e adicione um bloco
+> `lifecycle` nos dois `aws_ecs_service`, dizendo ao Terraform pra
+> ignorar mudanças nesse campo:
+>
+> ```hcl
+> resource "aws_ecs_service" "frontend" {
+>   # ... resto do resource igual ao modulo 04 ...
+>
+>   lifecycle {
+>     ignore_changes = [desired_count]
+>   }
+> }
+> ```
+>
+> (o mesmo bloco `lifecycle` entra no `aws_ecs_service.api`.)
 
 > 💡 **`scale_in_cooldown` x `scale_out_cooldown`:** depois de escalar, o
 > Auto Scaling espera esse tempo (em segundos) antes de escalar de novo

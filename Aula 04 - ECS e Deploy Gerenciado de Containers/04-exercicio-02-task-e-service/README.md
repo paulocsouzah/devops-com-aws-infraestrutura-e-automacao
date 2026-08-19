@@ -69,7 +69,21 @@ a partir do ALB), `ecs-task-definitions.tf` (as duas Task Definitions,
 `frontend` e `api`, com logs no CloudWatch) e `ecs-services.tf` (os
 dois ECS Services, registrados nos Target Groups do módulo 03) — e
 **edite** `variables.tf`, adicionando `frontend_desired_count` e
-`api_desired_count`.
+`api_desired_count` (pode copiar direto):
+
+```hcl
+variable "frontend_desired_count" {
+  description = "Quantidade desejada de tasks do Service frontend"
+  type        = number
+  default     = 1
+}
+
+variable "api_desired_count" {
+  description = "Quantidade desejada de tasks do Service api"
+  type        = number
+  default     = 1
+}
+```
 
 ---
 

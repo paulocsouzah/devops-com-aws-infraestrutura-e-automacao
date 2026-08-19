@@ -41,7 +41,15 @@ Dentro de [`00-pratica/`](../00-pratica/README.md), crie três arquivos
 novos — `network-alb.tf` (subnet pública nova e o Security Group do
 ALB), `ecs-cluster.tf` (o Cluster) e `alb.tf` (o Load Balancer, os
 Target Groups e as regras de roteamento) — e **edite** `variables.tf`,
-adicionando a variável nova `public_subnet_b_cidr`.
+adicionando a variável nova `public_subnet_b_cidr` (pode copiar direto):
+
+```hcl
+variable "public_subnet_b_cidr" {
+  description = "Faixa de IPs (CIDR) da segunda subnet publica (AZ2), usada pelo ALB"
+  type        = string
+  default     = "10.0.3.0/24"
+}
+```
 
 ---
 
