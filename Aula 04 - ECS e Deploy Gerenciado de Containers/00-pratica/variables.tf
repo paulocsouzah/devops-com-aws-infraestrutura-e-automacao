@@ -40,7 +40,7 @@ variable "private_subnet_cidr" {
 variable "project_name" {
   description = "Prefixo usado no nome/tags de todos os recursos deste projeto"
   type        = string
-  default     = "aula03"
+  default     = "aula04"
 }
 
 variable "my_ip" {
@@ -51,7 +51,7 @@ variable "my_ip" {
 variable "db_name" {
   description = "Nome do banco de dados (schema) criado dentro da instancia RDS"
   type        = string
-  default     = "app_aula03"
+  default     = "app_aula04"
 }
 
 variable "db_username" {

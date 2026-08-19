@@ -105,25 +105,45 @@ aws ecr get-login-password --region $AWS_REGION \
 > começar a falhar com erro de autenticação mais tarde na aula, rode
 > esse comando de novo.
 
-### 3. Build, tag e push — frontend
+### 3. Trazer o `app-aula03` para dentro de `00-pratica`
 
-A partir da pasta onde está o `app-aula03` (Aula 03, módulo 03):
+O código-fonte da aplicação (`app-aula03`) foi criado lá na Aula 03,
+módulo 03. Pra manter `00-pratica/` autossuficiente (todo recurso
+necessário desta aula dentro da própria pasta), traga uma cópia dele
+pra cá **antes do passo 4**, como uma subpasta de `00-pratica/`:
+
+```bash
+cd 00-pratica
+git clone https://github.com/SEU_USUARIO/app-aula03.git
+rm -rf app-aula03/.git
+```
+
+> ⚠️ O `rm -rf app-aula03/.git` é obrigatório. Sem ele, o `app-aula03`
+> continua sendo um repositório Git próprio dentro do seu repositório
+> desta aula — o Git da pasta de fora enxerga isso como um único
+> "gitlink" (submodule), não como arquivos de verdade. Resultado: quem
+> clonar seu repo depois recebe uma pasta `app-aula03/` **vazia**, e o
+> `docker build` do passo 4 falha. Depois de remover o `.git`, confirme
+> com `git status app-aula03` — cada arquivo deve aparecer individualmente
+> como `??`, não a pasta inteira como uma linha só.
+
+### 4. Build, tag e push — frontend
 
 ```bash
 cd app-aula03/frontend
 
-docker build -t ${var.project_name}-frontend .
-docker tag ${var.project_name}-frontend:latest \
-  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${var.project_name}-frontend:latest
+docker build -t aula04-frontend .
+docker tag aula04-frontend:latest \
+  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/aula04-frontend:latest
 docker push \
-  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${var.project_name}-frontend:latest
+  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/aula04-frontend:latest
 ```
 
-(troque `${var.project_name}` pelo valor real, ex: `aula04` — é só
-notação pra deixar claro que o nome bate com o `project_name` do
-Terraform)
+> 💡 `aula04` aqui é o valor de `project_name` no Terraform — se você
+> mudou o default em `variables.tf` pra outro nome, use o mesmo nome
+> nos comandos abaixo.
 
-### 4. Build, tag e push — api
+### 5. Build, tag e push — api
 
 ```bash
 cd ../api
@@ -135,7 +155,7 @@ docker push \
   $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/aula04-api:latest
 ```
 
-### 5. Conferir no Console (ou via CLI)
+### 6. Conferir no Console (ou via CLI)
 
 ```bash
 aws ecr describe-images --repository-name aula04-frontend --output table
@@ -183,6 +203,7 @@ sem alteração nas duas aulas.
 ## ✅ Checklist técnico
 
 - [ ] `ecr.tf` aplicado, dois repositórios criados
+- [ ] `app-aula03` copiado para dentro de `00-pratica/`, sem `.git` aninhado
 - [ ] Login do Docker no ECR realizado com sucesso
 - [ ] Imagem do `frontend` buildada, taggeada e enviada (`push`)
 - [ ] Imagem da `api` buildada, taggeada e enviada (`push`)
