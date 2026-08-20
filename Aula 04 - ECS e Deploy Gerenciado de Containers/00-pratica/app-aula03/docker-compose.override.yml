@@ -1,0 +1,43 @@
+# =============================================================================
+# docker-compose.override.yml — carregado AUTOMATICAMENTE pelo Docker
+# Compose (junto com o docker-compose.yml) sempre que voce roda
+# "docker compose up" nesta pasta, sem precisar referencia-lo. So existe
+# para o seu ambiente LOCAL: adiciona um MySQL de desenvolvimento e aponta
+# a api para ele, em vez do RDS (que so existe depois do modulo 04, na AWS).
+#
+# Este arquivo NUNCA deve ir para a EC2 de producao — la, so o
+# docker-compose.yml e usado (ver modulo 05).
+# =============================================================================
+
+services:
+  api:
+    ports:
+      - "4000:4000" # exposto so em dev, para inspecionar a API direto
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: app_aula03
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_aula03
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:

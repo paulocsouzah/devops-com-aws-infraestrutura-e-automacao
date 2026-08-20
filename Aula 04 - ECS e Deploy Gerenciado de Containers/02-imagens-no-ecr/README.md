@@ -127,7 +127,58 @@ rm -rf app-aula03/.git
 > com `git status app-aula03` — cada arquivo deve aparecer individualmente
 > como `??`, não a pasta inteira como uma linha só.
 
-### 4. Build, tag e push — frontend
+### 4. Confirmar o `nginx.conf` do frontend **antes** de buildar
+
+Seu `app-aula03` foi clonado do **seu próprio** repositório no GitHub
+(passo 3), então ele reflete o estado de quando você terminou a Aula 03
+— se isso foi antes desta correção existir no material do curso, seu
+`frontend/nginx.conf` ainda pode ter a versão antiga, com
+`proxy_pass http://api:4000/;` direto (hostname fixo, sem variável).
+
+Essa versão antiga faz o nginx tentar resolver o nome `api` **na
+inicialização do container**. Isso funciona no Docker Compose (rede
+local), mas não existe no ECS/Fargate desta aula — e o container
+**nem chega a subir**, com o erro `host not found in upstream "api"`,
+entrando num loop de restart.
+
+Abra `app-aula03/frontend/nginx.conf` e confirme que o bloco `/api/`
+está assim, com resolução **dinâmica** (variável + `resolver`), não
+com `proxy_pass` direto:
+
+```nginx
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
+    location /api/ {
+        set $upstream_api api:4000;
+        proxy_pass http://$upstream_api;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+> 💡 Por que isso não quebra a Aula 04? O bloco `location /api/` nunca
+> chega a ser executado aqui — o ALB já intercepta `/api/*` antes de
+> chegar no container (veja a seção **"E o proxy `/api` dentro do
+> nginx do frontend?"** mais abaixo). Com resolução dinâmica, o nginx
+> só tentaria resolver `api` se uma requisição real caísse nessa rota
+> — o que nunca acontece — então o container sobe normalmente em
+> qualquer ambiente.
+
+Se o seu arquivo já estiver assim, siga em frente. Se não estiver,
+corrija antes do próximo passo — refazer o build depois de já ter
+publicado a imagem quebrada só custa mais tempo.
+
+### 5. Build, tag e push — frontend
 
 ```bash
 cd app-aula03/frontend
@@ -143,7 +194,37 @@ docker push \
 > mudou o default em `variables.tf` pra outro nome, use o mesmo nome
 > nos comandos abaixo.
 
-### 5. Build, tag e push — api
+### 6. Confirmar as rotas do `api/index.js` **antes** de buildar
+
+Mesmo risco do passo 4, agora do lado da API: se o seu `app-aula03`
+(clonado do seu próprio GitHub) reflete um estado anterior a esta
+correção, as rotas em `api/index.js` podem ainda estar em `/usuarios`
+e `/api/usuarios`, sem o prefixo `/api`, e sem os endpoints
+`/api/status` e `/api/stress`.
+
+Isso não derruba o container (a API sobe normalmente), mas quebra a
+comunicação: o ALB encaminha `/api/*` **com o prefixo incluso** (ele
+não reescreve o caminho — veja a seção abaixo), então uma rota
+cadastrada só como `/usuarios` nunca é alcançada, e o frontend recebe
+`Cannot GET /api/usuarios`. O endpoint `/api/stress` também é usado
+mais adiante, no módulo 05 (Auto Scaling), pra gerar carga de CPU sob
+demanda — sem ele, aquele exercício não tem como provocar o scaling.
+
+Confirme que `app-aula03/api/index.js` define as rotas de negócio com
+o prefixo `/api`:
+
+```js
+app.get('/api/usuarios', async (req, res) => { /* ... */ });
+app.get('/api/status', (req, res) => { /* ... */ });
+app.get('/api/stress', (req, res) => { /* ... */ });
+app.post('/api/usuarios', async (req, res) => { /* ... */ });
+```
+
+Só a rota `/` (health check) fica sem prefixo — é ela que o Target
+Group do ALB chama diretamente. Se o seu arquivo estiver com rotas
+diferentes dessas, corrija antes do build abaixo.
+
+### 7. Build, tag e push — api
 
 ```bash
 cd ../api
@@ -155,7 +236,7 @@ docker push \
   $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/aula04-api:latest
 ```
 
-### 6. Conferir no Console (ou via CLI)
+### 8. Conferir no Console (ou via CLI)
 
 ```bash
 aws ecr describe-images --repository-name aula04-frontend --output table
@@ -184,7 +265,11 @@ found in upstream "api"`. A correção é usar resolução **dinâmica** (via
 variável + diretiva `resolver`), que só tenta resolver o nome se uma
 requisição de verdade chegar naquela rota — o que nunca acontece aqui,
 já que o ALB intercepta `/api/*` antes. O `nginx.conf` do `app-aula03`
-já vem assim, comentado, exatamente por causa disso.
+no template do curso já vem assim, comentado, exatamente por causa
+disso — mas se você fez o fork/push do seu `app-aula03` antes dessa
+correção existir, seu `nginx.conf` pode ainda estar com a versão
+antiga. É por isso que o **passo 4** acima pede pra confirmar isso
+antes de buildar (e o **passo 6** faz o mesmo do lado da API).
 
 **2. O ALB não remove o prefixo `/api`.** Diferente de alguns
 proxies/ingress que "reescrevem" o caminho, o Application Load Balancer
@@ -205,7 +290,9 @@ sem alteração nas duas aulas.
 - [ ] `ecr.tf` aplicado, dois repositórios criados
 - [ ] `app-aula03` copiado para dentro de `00-pratica/`, sem `.git` aninhado
 - [ ] Login do Docker no ECR realizado com sucesso
+- [ ] `frontend/nginx.conf` confirmado com resolução dinâmica (`resolver` + variável), não `proxy_pass` direto
 - [ ] Imagem do `frontend` buildada, taggeada e enviada (`push`)
+- [ ] `api/index.js` confirmado com rotas de negócio sob `/api` (`/api/usuarios`, `/api/status`, `/api/stress`)
 - [ ] Imagem da `api` buildada, taggeada e enviada (`push`)
 - [ ] `aws ecr describe-images` confirma as duas imagens com tag `latest`
 

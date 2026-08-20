@@ -294,6 +294,28 @@ Definitions, 2 Services, 2 Log Groups) para serem **criados** (`+`).
 terraform apply
 ```
 
+> ⚠️ **Se o `aws_security_group.web: Still destroying...` ficar preso
+> por vários minutos** (e eventualmente falhar com `Error: deleting
+> Security Group (...): DependencyViolation: resource ... has a
+> dependent object`), é porque o Terraform tentou destruir o Security
+> Group antigo **antes** de terminar de atualizar a regra do `sg-rds`
+> que ainda apontava pra ele (o ajuste do Passo 0, item 1) — a AWS não
+> deixa apagar um Security Group enquanto outro ainda o referencia
+> numa regra.
+>
+> A correção é forçar essa atualização primeiro, isolada, e só depois
+> rodar o apply completo:
+>
+> ```bash
+> terraform apply -target=aws_security_group.rds
+> terraform apply
+> ```
+>
+> O primeiro comando atualiza só a regra do `sg-rds` (troca a
+> referência de `web` para `ecs_tasks`); o segundo então destrói o
+> `sg-web` — já sem nada apontando pra ele — em segundos, e segue com
+> o resto do plano (Task Definitions e Services).
+
 ### 3. Acompanhar os Services subindo
 
 ```bash

@@ -1,11 +1,5 @@
 # Copie este arquivo para "terraform.tfvars" (que NAO vai para o Git) e
 # preencha os valores abaixo.
 
-# Seu IP publico (rode: curl https://checkip.amazonaws.com)
-my_ip = "SEU_IP_AQUI"
-
 # Senha do usuario administrador do RDS — escolha a sua, nao commite
 db_password = "SUA_SENHA_AQUI"
-
-# URL HTTPS do seu repositorio app-aula03 (modulo 03), clonado pelo user_data
-app_repo_url = "https://github.com/SEU_USUARIO/app-aula03.git"
