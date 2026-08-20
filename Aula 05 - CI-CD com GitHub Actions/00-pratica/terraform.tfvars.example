@@ -1,0 +1,5 @@
+# Copie este arquivo para "terraform.tfvars" (que NAO vai para o Git) e
+# preencha os valores abaixo.
+
+# Senha do usuario administrador do RDS — escolha a sua, nao commite
+db_password = "SUA_SENHA_AQUI"

@@ -1,0 +1,41 @@
+# =============================================================================
+# docker-compose.yml de PRODUCAO — e este arquivo que o user_data da EC2
+# executa (modulo 05). Sem servico de banco: o banco e o RDS, externo aos
+# containers. As credenciais chegam via variaveis de ambiente (arquivo
+# ".env", gerado automaticamente pelo user_data com o endpoint do RDS).
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # frontend: build multi-stage (node -> nginx). O nginx interno deste
+  # container tambem faz proxy de "/api" para o container da api (ver
+  # frontend/nginx.conf) — por isso a api nao precisa expor porta ao host.
+  # ---------------------------------------------------------------------------
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  # ---------------------------------------------------------------------------
+  # api: Node/Express, conectando no banco definido pelas variaveis de
+  # ambiente abaixo. Sem "ports:" propositalmente — so o frontend (via rede
+  # interna do compose) precisa falar com ela.
+  # ---------------------------------------------------------------------------
+  api:
+    build: ./api
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+
+# -----------------------------------------------------------------------------
+# Para executar (com um .env preenchido nesta mesma pasta):
+#   docker compose up -d --build
+# Para parar:
+#   docker compose down
+# -----------------------------------------------------------------------------

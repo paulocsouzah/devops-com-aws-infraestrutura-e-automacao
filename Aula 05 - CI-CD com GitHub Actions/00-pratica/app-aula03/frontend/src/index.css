@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f4f5f7;
+  color: #1f2933;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.subtitulo {
+  color: #52606d;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.formulario {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.formulario input {
+  flex: 1 1 200px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.formulario button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.formulario button:hover {
+  background: #1d4ed8;
+}
+
+.erro {
+  background: #fde8e8;
+  color: #9b1c1c;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.lista-usuarios {
+  list-style: none;
+  padding: 0;
+}
+
+.lista-usuarios li {
+  background: white;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
