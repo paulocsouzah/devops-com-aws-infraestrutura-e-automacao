@@ -4,6 +4,12 @@ Com a autenticação funcionando (módulo 03), chegou a hora da pipeline
 fazer sozinha o que você fazia na mão desde a Aula 04, módulo 02: login
 no ECR, build das duas imagens, tag e push.
 
+> 🧭 **Onde estamos:** duas pastas diferentes entram em jogo neste
+> módulo. O **passo 1** roda na pasta `00-pratica/` desta aula (dentro
+> do material do curso). Os **passos 2 em diante** rodam no clone
+> separado do `app-aula03` (a mesma pasta dos módulos 02 e 03, fora do
+> material do curso). Preste atenção em qual pasta cada passo pede.
+
 ---
 
 ## 🏷️ Uma decisão importante: a tag da imagem
@@ -25,14 +31,35 @@ Nesta aula, cada imagem ganha **duas** tags:
 > 💡 Rastreabilidade: com a tag pelo commit, `aws ecr describe-images`
 > e a própria Task Definition sempre mostram exatamente qual código está
 > rodando em produção — algo que `latest` sozinho nunca conseguiria.
+>
+> 💡 Não precisa instalar Docker em lugar nenhum pra isso funcionar: a
+> máquina que o GitHub Actions usa (`ubuntu-latest`) já vem com Docker
+> pronto pra uso, exatamente como o seu computador.
 
 ---
 
-## 📂 Onde trabalhar
+## 🛠️ Passo 1 — Confirmar que os repositórios ECR existem
 
-No `app-aula03`, edite `.github/workflows/deploy.yml`, adicionando o
-login no ECR e os dois builds (frontend e api) depois do step de
-autenticação do módulo 03:
+Este passo roda na pasta `00-pratica/` **desta aula** (dentro do
+material do curso, não no `app-aula03`):
+
+```bash
+cd 00-pratica
+terraform apply
+aws ecr describe-repositories --query "repositories[].repositoryName"
+```
+
+Deve aparecer `aula05-frontend` e `aula05-api` na lista (os dois
+repositórios já vêm prontos do `ecr.tf`, copiado da Aula 04).
+
+---
+
+## ✍️ Passo 2 — Editar o workflow
+
+Volte pro VS Code, na pasta do clone `app-aula03` (a mesma dos módulos
+02 e 03). Abra `.github/workflows/deploy.yml` e **substitua todo o
+conteúdo** por este (mantém tudo que já tinha, mais os steps novos de
+login no ECR e build/push das duas imagens):
 
 ```yaml
 name: Deploy
@@ -81,6 +108,8 @@ jobs:
           docker push $REGISTRY/aula05-api:latest
 ```
 
+Salve o arquivo (`Ctrl+S`).
+
 > 💡 `steps.login-ecr.outputs.registry` — a action `amazon-ecr-login`
 > devolve o endereço completo do seu registro
 > (`<conta>.dkr.ecr.us-east-1.amazonaws.com`) como *output*, então você
@@ -90,7 +119,8 @@ jobs:
 >
 > 💡 `working-directory` troca a pasta de trabalho **só daquele step** —
 > equivalente a fazer `cd frontend` antes do `docker build`, sem afetar
-> os outros steps do job.
+> os outros steps do job. `frontend` e `api` aqui são as pastas que já
+> existem dentro do `app-aula03` desde a Aula 03 — nada muda nelas.
 >
 > 💡 `aula05` nos nomes das imagens segue o mesmo `project_name` que
 > você já deve ter atualizado no `variables.tf` do
@@ -99,34 +129,26 @@ jobs:
 
 ---
 
-## 🛠️ Passo a passo
+## 📤 Passo 3 — Enviar e acompanhar
 
-### 1. Confirmar que os repositórios ECR existem
-
-Os dois repositórios (`aula05-frontend`, `aula05-api`) vêm do
-`ecr.tf`, já presente em [`00-pratica/`](../00-pratica/README.md) (foi
-copiado pronto da Aula 04). Confirme que você já rodou `terraform apply`
-nesta aula:
+Ainda na pasta `app-aula03` (não confunda com a `00-pratica`):
 
 ```bash
-cd 00-pratica
-terraform apply
-aws ecr describe-repositories --query "repositories[].repositoryName"
-```
-
-### 2. Atualizar o workflow e enviar
-
-```bash
-cd app-aula03
 git add .github/workflows/deploy.yml
 git commit -m "ci: builda e publica as imagens no ECR automaticamente"
 git push origin main
 ```
 
-### 3. Acompanhar e validar
+No navegador, aba **Actions** do seu repositório: acompanhe os dois
+steps novos (build/push do frontend, build/push da api) até ficarem
+verdes.
 
-Na aba **Actions**, acompanhe os dois novos steps de build/push.
-Depois, confirme no ECR que a imagem chegou com **duas** tags:
+---
+
+## ✅ Passo 4 — Confirmar no ECR
+
+De volta ao terminal, na pasta `00-pratica/` **desta aula** (a mesma do
+Passo 1):
 
 ```bash
 aws ecr describe-images --repository-name aula05-frontend \
@@ -136,7 +158,19 @@ aws ecr describe-images --repository-name aula05-api \
 ```
 
 Você deve ver, em cada repositório, uma entrada com `["latest",
-"<hash-do-commit>"]`.
+"<hash-do-commit>"]`. **Tire um print** disso — vai servir de imagem no
+material da aula.
+
+---
+
+## 🆘 Troubleshooting comum deste módulo
+
+| Problema | O que fazer |
+|---|---|
+| Step "Login no Amazon ECR" falha | Confirme que o step de credenciais (módulo 03) roda **antes** dele no arquivo, e que os 3 Secrets ainda são válidos (sessão do Lab não expirou) |
+| `docker build` falha com "no such file or directory" | O `working-directory` (`frontend` ou `api`) não bate com a estrutura real do seu `app-aula03` — confirme que essas pastas existem na raiz do repositório |
+| `aws ecr describe-images` não mostra a tag nova | Confirme que o job `build-and-push` terminou verde na aba Actions antes de rodar o comando — se ainda está rodando, espere |
+| `denied: User is not authorized` no push pro ECR | Sessão do Lab expirou no meio da execução — volte ao módulo 03 e atualize os Secrets |
 
 ---
 
@@ -146,6 +180,7 @@ Você deve ver, em cada repositório, uma entrada com `["latest",
 - [ ] Workflow atualizado com login no ECR e os dois builds
 - [ ] Pipeline executa verde na aba **Actions**
 - [ ] Cada repositório ECR mostra uma imagem nova, com a tag do commit **e** `latest`
+- [ ] Print guardado de `aws ecr describe-images`
 
 ---
 

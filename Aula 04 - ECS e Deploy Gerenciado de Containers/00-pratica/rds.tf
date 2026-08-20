@@ -24,6 +24,15 @@ resource "aws_security_group" "rds" {
   tags = {
     Name = "${var.project_name}-sg-rds"
   }
+
+  # Sem isto, o Terraform tenta apagar este Security Group ANTES de
+  # atualizar a instancia RDS pra usar o novo (quando project_name muda
+  # entre aulas) — e a AWS recusa, porque a instancia antiga ainda esta
+  # anexada a ele. Criar o novo primeiro (e so depois apagar o antigo)
+  # evita esse impasse.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Instancia RDS MySQL — gerenciada pela AWS, sem IP publico, isolada na

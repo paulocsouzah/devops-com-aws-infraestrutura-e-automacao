@@ -24,6 +24,15 @@ resource "aws_security_group" "rds" {
   tags = {
     Name = "${var.project_name}-sg-rds"
   }
+
+  # Mesmo motivo do aws_db_subnet_group.main (network-rds.tf): a instancia
+  # RDS so e renomeada, nao substituida, quando "project_name" muda — sem
+  # create_before_destroy, o Terraform tenta apagar este Security Group
+  # antes de mover a instancia pro novo, e a AWS recusa (ENI da instancia
+  # ainda anexada a este SG).
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Instancia RDS MySQL — gerenciada pela AWS, sem IP publico, isolada na

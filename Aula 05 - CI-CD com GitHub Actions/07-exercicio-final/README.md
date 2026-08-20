@@ -91,12 +91,12 @@ No repositório `app-aula03` (o seu, no GitHub), confirme que
 
 ### 5. Fazer uma mudança real e visível
 
-Edite algo visível no frontend (ex: um texto, uma cor) — isso vai provar
-que a versão que está no ar depois do deploy é, de fato, a nova:
+No clone separado do `app-aula03` (fora do material do curso — a mesma
+pasta dos módulos 02-05), edite algo visível no frontend (ex: um texto,
+uma cor em `frontend/src/App.jsx`) — isso vai provar que a versão que
+está no ar depois do deploy é, de fato, a nova:
 
 ```bash
-cd app-aula03
-# edite frontend/src/App.jsx
 git add .
 git commit -m "feat: ajusta texto da tela inicial"
 git push origin main
@@ -104,15 +104,10 @@ git push origin main
 
 ### 6. Acompanhar a pipeline
 
-Na aba **Actions** do `app-aula03`, acompanhe os dois jobs até ficarem
-verdes. Em paralelo, num terminal:
-
-```bash
-watch -n 5 'aws ecs describe-services --cluster aula05-cluster \
-  --services aula05-frontend aula05-api \
-  --query "services[].{Nome:serviceName,Rodando:runningCount,Desejado:desiredCount,Revisao:taskDefinition}" \
-  --output table'
-```
+Na aba **Actions** do `app-aula03` (no navegador), acompanhe os dois
+jobs até ficarem verdes. Se quiser acompanhar pelo terminal também
+(opcional), veja o comando de repetição (Windows/Mac/Linux) no módulo
+05, seção "Passo 3".
 
 ### 7. Validar a aplicação atualizada
 

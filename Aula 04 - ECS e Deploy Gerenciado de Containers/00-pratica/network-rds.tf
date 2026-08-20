@@ -15,7 +15,15 @@ resource "aws_subnet" "private" {
 # para uma instancia RDS single-AZ (sem replica), por motivos de alta
 # disponibilidade da plataforma.
 resource "aws_db_subnet_group" "main" {
-  name       = "${var.project_name}-db-subnet-group"
+  # "name" fixo de proposito, SEM var.project_name: a AWS recusa mover uma
+  # instancia RDS existente para um DB Subnet Group novo quando os dois
+  # cobrem exatamente as mesmas subnets (erro "InvalidVPCNetworkStateFault
+  # ... in the same VPC"), o que aconteceria toda vez que project_name
+  # mudasse entre aulas sem destruir a instancia antes. Como esse nome
+  # nunca aparece em nenhum comando que voce roda, so nas tags (abaixo,
+  # essas sim atualizadas por aula), mante-lo estavel evita esse impasse
+  # sem perder nada em termos didaticos.
+  name       = "app-db-subnet-group"
   subnet_ids = [aws_subnet.public.id, aws_subnet.private.id]
 
   tags = {

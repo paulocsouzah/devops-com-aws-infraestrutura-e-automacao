@@ -5,6 +5,11 @@ ECR (módulo 04), falta ensinar o ECS a **usá-las** — registrando uma
 nova revisão da Task Definition e atualizando o Service, sem downtime,
 sem você digitar um único comando `aws ecs`.
 
+> 🧭 **Onde estamos:** de novo, duas pastas diferentes. O **passo 1** do
+> "passo a passo" roda em `00-pratica/` (material do curso). O **passo
+> 2 em diante** roda no clone separado do `app-aula03` (fora do
+> material do curso) — a mesma pasta dos módulos 02, 03 e 04.
+
 ---
 
 ## 🧩 O que precisa acontecer, em ordem
@@ -29,11 +34,13 @@ Definition na mão.
 
 ---
 
-## 📂 Onde trabalhar
+## ✍️ Onde trabalhar
 
-Adicione o segundo job, `deploy`, ao `.github/workflows/deploy.yml` do
-`app-aula03` — ele roda **depois** do `build-and-push` (`needs:`), uma
-vez para cada Service (`frontend` e `api`):
+No VS Code, na pasta do clone `app-aula03` (módulos 02-04), abra
+`.github/workflows/deploy.yml` de novo e **substitua todo o conteúdo**
+pelo YAML abaixo — ele mantém o job `build-and-push` que você já tinha
+(módulo 04) e adiciona um segundo job, `deploy`, que roda **depois**
+dele (`needs:`), uma vez para cada Service (`frontend` e `api`):
 
 ```yaml
 name: Deploy
@@ -168,8 +175,10 @@ jobs:
 
 ### 1. Confirmar os nomes exatos
 
-Antes de colar o YAML, confirme o nome do Cluster e dos Services (deve
-bater com `project_name = "aula05"` do seu `variables.tf`):
+Este passo roda na pasta `00-pratica/` **desta aula** (material do
+curso). Antes de colar o YAML, confirme o nome do Cluster e dos
+Services (deve bater com `project_name = "aula05"` do seu
+`variables.tf`):
 
 ```bash
 cd 00-pratica
@@ -179,8 +188,10 @@ aws ecs list-services --cluster aula05-cluster
 
 ### 2. Atualizar o workflow e enviar
 
+Volte pro terminal na pasta do clone `app-aula03` (fora do material do
+curso — módulos 02-04):
+
 ```bash
-cd app-aula03
 git add .github/workflows/deploy.yml
 git commit -m "ci: adiciona deploy automatico no ECS (nova revisao + rolling deployment)"
 git push origin main
@@ -188,9 +199,22 @@ git push origin main
 
 ### 3. Acompanhar o rolling deployment em tempo real
 
-Enquanto o job `deploy` roda, acompanhe pelo terminal (numa segunda
-aba) as tasks trocando:
+Abra **um novo terminal** (deixe o `git push` do passo anterior de
+lado) — não precisa estar em nenhuma pasta específica, os comandos
+abaixo funcionam de qualquer lugar. Escolha o comando do seu sistema:
 
+**Windows (PowerShell):**
+```powershell
+while ($true) {
+  Clear-Host
+  aws ecs describe-services --cluster aula05-cluster --services aula05-frontend aula05-api `
+    --query "services[].{Nome:serviceName,Rodando:runningCount,Desejado:desiredCount,Revisao:taskDefinition}" `
+    --output table
+  Start-Sleep -Seconds 5
+}
+```
+
+**Mac/Linux (ou Git Bash no Windows):**
 ```bash
 watch -n 5 'aws ecs describe-services --cluster aula05-cluster \
   --services aula05-frontend aula05-api \
@@ -198,19 +222,41 @@ watch -n 5 'aws ecs describe-services --cluster aula05-cluster \
   --output table'
 ```
 
+> 💡 Se o comando `watch` não existir no seu Mac/Linux, instale com
+> `brew install watch` (Mac) ou `sudo apt install procps` (Linux) — ou
+> simplesmente rode o comando `aws ecs describe-services` sozinho (sem
+> o `watch`), repetidamente, apertando a seta pra cima + Enter no
+> terminal a cada poucos segundos.
+
+Pra **parar** de repetir, aperte `Ctrl+C`.
+
 Você deve ver o `Revisao` (o número no fim do ARN da Task Definition)
 mudar, e `Rodando` oscilar (sobe uma task nova, depois desce uma
 antiga) até se estabilizar de novo em `Rodando == Desejado`.
 
 ### 4. Validar a aplicação
 
+De volta a um terminal na pasta `00-pratica/` desta aula:
+
 ```bash
 terraform output alb_dns_name
 ```
 
-Acesse `http://<alb_dns_name>/` — a aplicação deve continuar respondendo
-**o tempo todo**, inclusive durante a troca de tasks (é essa a garantia
-do rolling deployment: zero downtime).
+Copie o endereço que aparecer e cole no navegador
+(`http://<alb_dns_name>/`) — a aplicação deve continuar respondendo **o
+tempo todo**, inclusive durante a troca de tasks (é essa a garantia do
+rolling deployment: zero downtime).
+
+---
+
+## 🆘 Troubleshooting comum deste módulo
+
+| Problema | O que fazer |
+|---|---|
+| Step "Baixar Task Definition atual" falha, dizendo que a task definition não existe | Confirme que o Passo 1 (`terraform output`, `aws ecs list-services`) mostrou os nomes `aula05-frontend`/`aula05-api` — se o seu `project_name` for outro, ajuste os nomes no YAML |
+| `ClientException: Container ... does not exist in the task definition` | O `container-name` (`frontend` ou `api`) não bate com o nome real dentro da Task Definition — confira `ecs-task-definitions.tf` na Aula 04 |
+| Job `deploy` demora muito e falha por timeout | As tasks novas não estão ficando saudáveis — veja o troubleshooting do módulo 06 (próximo módulo) |
+| PowerShell reclama de sintaxe no comando `while` | Confirme que copiou o bloco inteiro, incluindo os acentos graves (`` ` ``) no fim de cada linha — eles indicam "continua na próxima linha" no PowerShell |
 
 ---
 

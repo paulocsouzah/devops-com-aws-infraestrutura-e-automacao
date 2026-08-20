@@ -75,7 +75,7 @@ Route Table pública — isso é o que a torna privada.
 
 ```hcl
 resource "aws_db_subnet_group" "main" {
-  name       = "${var.project_name}-db-subnet-group"
+  name       = "app-db-subnet-group"
   subnet_ids = [aws_subnet.public.id, aws_subnet.private.id]
 
   tags = {
@@ -83,6 +83,15 @@ resource "aws_db_subnet_group" "main" {
   }
 }
 ```
+
+> 💡 Repare que o `name` **não** usa `var.project_name` (diferente de
+> quase tudo neste projeto) — só a tag usa. Isso é proposital: mais pra
+> frente (Aula 04/05), quando `project_name` mudar de aula pra aula, a
+> AWS recusa mover uma instância RDS já existente para um DB Subnet
+> Group novo que cubra exatamente as mesmas subnets (erro
+> `InvalidVPCNetworkStateFault`). Como esse nome nunca aparece em nenhum
+> comando que você roda — só nas tags, que continuam mudando por aula —
+> mantê-lo fixo evita esse problema sem perder nada.
 
 ## 🔒 Security Group do banco
 
@@ -112,6 +121,15 @@ resource "aws_security_group" "rds" {
 
   tags = {
     Name = "${var.project_name}-sg-rds"
+  }
+
+  # Sem isto, o Terraform tenta apagar este Security Group ANTES de
+  # atualizar a instancia RDS pra usar o novo (quando project_name muda
+  # entre aulas) — e a AWS recusa, porque a instancia antiga ainda esta
+  # anexada a ele. Criar o novo primeiro (e so depois apagar o antigo)
+  # evita esse impasse.
+  lifecycle {
+    create_before_destroy = true
   }
 }
 ```
