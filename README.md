@@ -96,7 +96,7 @@ devops-com-aws-infraestrutura-e-automacao/
 | 2 | [Aula 02 - Terraform](<Aula 02 - Terraform/README.md>) | Infraestrutura como Código com Terraform | ✅ Disponível |
 | 3 | [Aula 03 - Provisionamento Automatico](<Aula 03 - Provisionamento Automatico/README.md>) | User Data, Cloud-Init, RDS e deploy automatizado (React + Node) | ✅ Disponível |
 | 4 | [Aula 04 - ECS e Deploy Gerenciado de Containers](<Aula 04 - ECS e Deploy Gerenciado de Containers/README.md>) | Cluster Fargate, Task Definition, Service, ALB e Auto Scaling, por Terraform | ✅ Disponível |
-| 5 | Aula 05 - CI/CD com GitHub Actions | Pipeline de build, imagem Docker e deploy automático no ECS | 🚧 Em construção |
+| 5 | [Aula 05 - CI/CD com GitHub Actions](<Aula 05 - CI-CD com GitHub Actions/README.md>) | Pipeline de build, imagem Docker e deploy automático no ECS | ✅ Disponível |
 | 6 | Aula 06 - Monitoramento e Observabilidade | CloudWatch, Container Insights, logs, métricas e alarmes | ⏳ Planejada |
 | 7 | Aula 07 - Projeto Integrador | Projeto final integrando todo o conteúdo do módulo | ⏳ Planejada |
 
@@ -207,14 +207,16 @@ servidor nenhum.
   deployment do Service)
 
 **Prática:** pipeline completo contendo build da aplicação, build da
-imagem Docker, publicação da imagem e atualização automática do Service
-criado na Aula 4 — sem precisar reconfigurar servidor nenhum.
+imagem Docker, publicação da imagem no **Amazon ECR** (o mesmo registro
+provisionado na Aula 4) e atualização automática do Service criado lá —
+sem precisar reconfigurar servidor nenhum.
 
-**Recursos gratuitos:** GitHub, GitHub Actions, GitHub Container Registry
-(GHCR).
+**Recursos gratuitos:** GitHub, GitHub Actions.
 
 **Objetivo da aula:** realizar deploy automático sempre que houver um push
 na branch principal.
+
+📂 [Acessar material da Aula 05](<Aula 05 - CI-CD com GitHub Actions/README.md>)
 
 ---
 

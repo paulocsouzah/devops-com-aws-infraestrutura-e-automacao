@@ -12,8 +12,10 @@ conseguir rodar ela.
 
 O **ECR (Elastic Container Registry)** é o registro de imagens Docker
 **privado** da AWS — o equivalente ao Docker Hub ou ao GitHub Container
-Registry (GHCR, que vamos usar na Aula 05), só que integrado nativamente
-com IAM e com o resto dos serviços AWS.
+Registry (GHCR), só que integrado nativamente com IAM e com o resto dos
+serviços AWS. É o mesmo registro que a pipeline de CI/CD da Aula 05 vai
+usar — só que publicando de forma automática a cada `push`, em vez de
+manualmente como fazemos aqui.
 
 Cada **repositório** no ECR guarda as versões (tags) de **uma** imagem.
 Como nossa aplicação tem dois containers, vamos criar **dois**

@@ -19,10 +19,24 @@ você já aplicou (e destruiu) na Aula 04.
 
 ## 📂 O que muda aqui, módulo a módulo
 
-> Os módulos desta aula ainda estão em construção — esta tabela será
-> preenchida conforme cada um for criado (workflow de build/push da
-> imagem, secrets do GitHub, deploy automático via nova revisão da Task
-> Definition, etc.).
+Diferente das aulas anteriores, os módulos desta aula **não editam
+arquivos `.tf` dentro de `00-pratica/`** — a infraestrutura já está
+pronta desde a Aula 04. O que cada módulo constrói é o arquivo
+`.github/workflows/deploy.yml`, **dentro do repositório `app-aula03`**
+(o seu, no GitHub — não este repositório de material didático):
+
+| Módulo | O que adiciona/muda no `deploy.yml` do `app-aula03` |
+|---|---|
+| [02-preparando-o-repositorio](../02-preparando-o-repositorio/README.md) | Cria o workflow mínimo, só com o trigger (`on: push`) e um step de teste |
+| [03-exercicio-01-secrets-e-permissoes](../03-exercicio-01-secrets-e-permissoes/README.md) | Secrets AWS no GitHub, step `configure-aws-credentials` |
+| [04-exercicio-02-build-e-push](../04-exercicio-02-build-e-push/README.md) | Job `build-and-push`: login no ECR, build/tag/push das duas imagens (tag = hash do commit) |
+| [05-exercicio-03-deploy-automatico](../05-exercicio-03-deploy-automatico/README.md) | Job `deploy`: nova revisão da Task Definition + rolling deployment dos dois Services |
+| [06-organizacao-e-boas-praticas](../06-organizacao-e-boas-praticas/README.md) | `concurrency`, `permissions` mínimas — ajustes de robustez no mesmo `deploy.yml` |
+| [07-exercicio-final](../07-exercicio-final/README.md) | nada de novo — só valida a pipeline completa de ponta a ponta |
+
+O módulo 05 é o mais simbólico: é onde o último comando manual da Aula
+04 (`aws ecs update-service --force-new-deployment`) **sai de cena**,
+substituído por um deploy que acontece sozinho a cada `push`.
 
 ## ⚠️ Antes de começar
 
