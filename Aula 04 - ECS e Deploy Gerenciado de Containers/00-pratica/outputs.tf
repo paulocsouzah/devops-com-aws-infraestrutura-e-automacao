@@ -23,6 +23,11 @@ output "route_table_id" {
   value       = aws_route_table.public.id
 }
 
+output "security_group_id" {
+  description = "ID do Security Group da EC2"
+  value       = aws_security_group.web.id
+}
+
 output "security_group_rds_id" {
   description = "ID do Security Group do RDS"
   value       = aws_security_group.rds.id
@@ -38,7 +43,17 @@ output "db_port" {
   value       = aws_db_instance.main.port
 }
 
-output "alb_dns_name" {
-  description = "DNS publico do Application Load Balancer — URL da aplicacao"
-  value       = aws_lb.main.dns_name
+output "instance_public_ip" {
+  description = "IP publico da instancia EC2 criada"
+  value       = aws_instance.web.public_ip
+}
+
+output "app_url" {
+  description = "URL da aplicacao no navegador"
+  value       = "http://${aws_instance.web.public_ip}"
+}
+
+output "ssh_command" {
+  description = "Comando pronto para conectar via SSH (rode a partir da pasta onde salvou o vockey.pem)"
+  value       = "ssh -i vockey.pem ec2-user@${aws_instance.web.public_ip}"
 }

@@ -31,12 +31,6 @@ variable "public_subnet_cidr" {
   default     = "10.0.1.0/24"
 }
 
-variable "public_subnet_b_cidr" {
-  description = "Faixa de IPs (CIDR) da segunda subnet publica (AZ2), usada pelo ALB"
-  type        = string
-  default     = "10.0.3.0/24"
-}
-
 variable "private_subnet_cidr" {
   description = "Faixa de IPs (CIDR) da subnet privada, onde o RDS mora"
   type        = string
@@ -47,6 +41,11 @@ variable "project_name" {
   description = "Prefixo usado no nome/tags de todos os recursos deste projeto"
   type        = string
   default     = "aula04"
+}
+
+variable "my_ip" {
+  description = "Seu IP publico, usado para restringir o acesso SSH (defina em terraform.tfvars)"
+  type        = string
 }
 
 variable "db_name" {
@@ -67,50 +66,7 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "frontend_desired_count" {
-  description = "Quantidade desejada de tasks do Service frontend"
-  type        = number
-  default     = 1
-}
-
-variable "api_desired_count" {
-  description = "Quantidade desejada de tasks do Service api"
-  type        = number
-  default     = 1
-}
-
-variable "frontend_min_capacity" {
-  description = "Capacidade minima (numero de tasks) do Auto Scaling do Service frontend"
-  type        = number
-  default     = 1
-}
-
-variable "frontend_max_capacity" {
-  description = "Capacidade maxima (numero de tasks) do Auto Scaling do Service frontend"
-  type        = number
-  default     = 3
-}
-
-variable "api_min_capacity" {
-  description = "Capacidade minima (numero de tasks) do Auto Scaling do Service api"
-  type        = number
-  default     = 1
-}
-
-variable "api_max_capacity" {
-  description = "Capacidade maxima (numero de tasks) do Auto Scaling do Service api"
-  type        = number
-  default     = 3
-}
-
-variable "target_cpu_percent" {
-  description = "Utilizacao media de CPU (%) que o Auto Scaling procura manter em cada Service"
-  type        = number
-  default     = 40
-}
-
-variable "target_memory_percent" {
-  description = "Utilizacao media de memoria (%) que o Auto Scaling procura manter no Service api"
-  type        = number
-  default     = 70
+variable "app_repo_url" {
+  description = "URL HTTPS do repositorio Git da aplicacao (app-aula03), clonado pelo user_data"
+  type        = string
 }
