@@ -97,7 +97,7 @@ devops-com-aws-infraestrutura-e-automacao/
 | 3 | [Aula 03 - Provisionamento Automatico](<Aula 03 - Provisionamento Automatico/README.md>) | User Data, Cloud-Init, RDS e deploy automatizado (React + Node) | ✅ Disponível |
 | 4 | [Aula 04 - ECS e Deploy Gerenciado de Containers](<Aula 04 - ECS e Deploy Gerenciado de Containers/README.md>) | Cluster Fargate, Task Definition, Service, ALB e Auto Scaling, por Terraform | ✅ Disponível |
 | 5 | [Aula 05 - CI/CD com GitHub Actions](<Aula 05 - CI-CD com GitHub Actions/README.md>) | Pipeline de build, imagem Docker e deploy automático no ECS | ✅ Disponível |
-| 6 | Aula 06 - Monitoramento e Observabilidade | CloudWatch, Container Insights, logs, métricas e alarmes | ⏳ Planejada |
+| 6 | [Aula 06 - Monitoramento e Observabilidade](<Aula 06 - Monitoramento e Observabilidade/README.md>) | CloudWatch, Container Insights, logs, métricas e alarmes | ✅ Disponível |
 | 7 | Aula 07 - Projeto Integrador | Projeto final integrando todo o conteúdo do módulo | ⏳ Planejada |
 
 **Como usar:** siga as aulas na ordem numérica. Dentro de cada aula, siga
