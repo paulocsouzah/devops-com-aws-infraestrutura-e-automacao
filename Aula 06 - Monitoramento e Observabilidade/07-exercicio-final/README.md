@@ -81,21 +81,37 @@ terraform plan
 terraform apply
 ```
 
-### 4. Confirmar a assinatura do SNS
+### 4. Publicar as imagens nos novos repositórios ECR
+
+A pipeline de CI/CD da Aula 05 **não** publica nos repositórios desta
+aula (`aula06-*`) — ela aponta pro ECR da Aula 05, que já foi
+destruído. Publique na mão, seguindo a seção **"Importante: como as
+imagens chegam no ECR desta vez"** do
+[`00-pratica/README.md`](../00-pratica/README.md).
+
+```bash
+aws ecs describe-services --cluster aula06-cluster --services aula06-frontend aula06-api \
+  --query "services[].{Nome:serviceName,Rodando:runningCount,Desejado:desiredCount}" --output table
+```
+
+Confirme `Rodando == Desejado` nos dois antes de seguir.
+
+### 5. Confirmar a assinatura do SNS
 
 Assim que o `apply` terminar, confirme o e-mail de assinatura (módulo
 05, Passo 3) — sem isso, nenhuma notificação chega mais adiante.
 
-### 5. Confirmar que a aplicação e a pipeline continuam funcionando
+### 6. Confirmar que a aplicação está no ar
 
 ```bash
 terraform output alb_dns_name
 ```
 
 Acesse `http://<alb_dns_name>/`, cadastre um usuário — confirma que
-tudo que veio da Aula 04/05 continua de pé.
+tudo que veio da Aula 04/05 continua de pé (a pipeline de CI/CD em si
+não é usada nesta aula, só a infraestrutura que ela mantém).
 
-### 6. Gerar carga real e observar tudo reagindo junto
+### 7. Gerar carga real e observar tudo reagindo junto
 
 Use dois terminais: um com o `dashboard.js` (visualização), outro com
 o gerador de carga garantida — o mesmo comando do módulo 05 (Passo 4):
@@ -124,7 +140,7 @@ Enquanto a carga roda, alterne entre três telas:
 - **Alarme** (`aws cloudwatch describe-alarms --alarm-names
   aula06-api-cpu-high`): estado mudando de `OK` pra `ALARM`.
 
-### 7. Confirmar o e-mail de alarme
+### 8. Confirmar o e-mail de alarme
 
 > ⚠️ **Isso pode demorar de 5 a 15 minutos**, mesmo com a CPU já
 > visivelmente alta — as métricas do namespace `AWS/ECS` são publicadas
@@ -136,13 +152,13 @@ Deve chegar um e-mail da AWS quando o estado virar `ALARM`. Pare a
 carga (`Ctrl+C` / feche o Terminal 2) e espere o segundo e-mail, de
 volta pra `OK` (esse costuma chegar mais rápido).
 
-### 8. Consultar os logs do período de carga
+### 9. Consultar os logs do período de carga
 
 No Logs Insights (módulo 03), rode a query salva `api-logs-recentes`
 filtrando pelo intervalo de tempo em que a carga rodou — confirme que
 dá pra ver o volume de requisições subindo nos logs também.
 
-### 9. Destruir ao final
+### 10. Destruir ao final
 
 ```bash
 terraform destroy
@@ -158,6 +174,7 @@ cobra por hora — veja o módulo 06 — mas ainda assim: destrua tudo).
 ## ✅ Checklist técnico
 
 - [ ] `00-pratica/` completa, com `project_name = "aula06"` aplicado com sucesso
+- [ ] Imagens publicadas na mão nos repositórios `aula06-*`, Services `RUNNING`
 - [ ] Container Insights ligado, métricas visíveis por task
 - [ ] Duas queries salvas no Logs Insights, testadas
 - [ ] Dashboard com os 4 widgets, mostrando dados reais

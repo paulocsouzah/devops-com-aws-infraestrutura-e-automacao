@@ -27,6 +27,25 @@ nada novo.
 
 ---
 
+## 🐳 Passo 0 — Confirmar que os Services têm imagem pra rodar
+
+Container Insights só tem o que mostrar se existir task rodando de
+verdade. Antes de seguir, confirme:
+
+```bash
+aws ecs describe-services --cluster aula06-cluster --services aula06-frontend aula06-api \
+  --query "services[].{Nome:serviceName,Rodando:runningCount,Desejado:desiredCount}" --output table
+```
+
+Se `Rodando` estiver em `0`, é porque os repositórios ECR
+(`aula06-frontend`/`aula06-api`) ainda estão vazios — a pipeline de
+CI/CD da Aula 05 **não** publica neles automaticamente (ela aponta pro
+ECR da Aula 05, que nem existe mais). Publique as imagens na mão antes
+de continuar — veja a seção **"Importante: como as imagens chegam no
+ECR desta vez"** no [`00-pratica/README.md`](../00-pratica/README.md).
+
+---
+
 ## 📂 Passo 1 — Editar o Cluster
 
 Abra o arquivo `ecs-cluster.tf`, dentro de

@@ -9,12 +9,17 @@ normal.
 
 Esta aula parte de onde a
 [Aula 05](<../Aula 05 - CI-CD com GitHub Actions/README.md>) parou: o
-mesmo Cluster ECS Fargate, o mesmo ALB, o mesmo RDS, o mesmo pipeline de
-CI/CD. A diferença é que, até aqui, a única forma de saber se a
-aplicação estava saudável era rodar `aws ecs describe-services` ou
-`aws elbv2 describe-target-health` na mão — a partir de agora, o
-CloudWatch observa isso o tempo todo, sozinho, e te avisa quando
-precisar.
+mesmo Cluster ECS Fargate, o mesmo ALB, o mesmo RDS. A diferença é que,
+até aqui, a única forma de saber se a aplicação estava saudável era
+rodar `aws ecs describe-services` ou `aws elbv2 describe-target-health`
+na mão — a partir de agora, o CloudWatch observa isso o tempo todo,
+sozinho, e te avisa quando precisar.
+
+> 💡 A pipeline de CI/CD da Aula 05 não é usada nesta aula — como
+> `project_name` muda pra `"aula06"`, os repositórios ECR são novos, e
+> a publicação das imagens desta vez é manual (veja o
+> [`00-pratica/README.md`](00-pratica/README.md)). O foco aqui é
+> observabilidade, não deploy automatizado.
 
 ## 📚 Estrutura
 
