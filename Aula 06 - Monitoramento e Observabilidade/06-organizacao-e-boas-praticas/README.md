@@ -72,6 +72,15 @@ que vire inútil.
    contrário do ECR na Aula 04, que precisa de `force_delete`), mas se
    acontecer, confira se não existe alguma assinatura adicional criada
    manualmente pelo Console, fora do Terraform.
+6. **CPU já está claramente acima do threshold (você vê isso no
+   Dashboard, ou via `aws cloudwatch get-metric-statistics`), mas o
+   alarme continua `OK` por vários minutos** → isso é comportamento
+   real, não bug: as métricas do namespace `AWS/ECS` costumam ser
+   publicadas com atraso, e a avaliação do Alarme roda sobre esse fluxo
+   atrasado — não sobre o dado mais recente disponível via consulta
+   direta. Na prática, pode levar entre 5 e 15 minutos entre a CPU
+   cruzar o threshold de verdade e o Alarme perceber isso. Continue a
+   carga e tenha paciência — não é preciso recriar nada.
 
 ---
 

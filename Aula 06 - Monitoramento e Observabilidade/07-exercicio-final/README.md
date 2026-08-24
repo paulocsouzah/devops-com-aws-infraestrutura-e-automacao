@@ -97,9 +97,26 @@ tudo que veio da Aula 04/05 continua de pé.
 
 ### 6. Gerar carga real e observar tudo reagindo junto
 
+Use dois terminais: um com o `dashboard.js` (visualização), outro com
+o gerador de carga garantida — o mesmo comando do módulo 05 (Passo 4):
+
 ```bash
+# Terminal 1 (visualizacao)
 node dashboard.js <alb_dns_name> aula06-cluster aula06-api
 ```
+
+```bash
+# Terminal 2 (garante que a CPU passa de 70%) — Mac/Linux/Git Bash
+ALB="<alb_dns_name>"
+for onda in $(seq 1 10); do
+  for i in $(seq 1 40); do
+    curl -s "http://$ALB/api/stress?duracao_ms=30000" -o /dev/null &
+  done
+  sleep 10
+done
+```
+
+> No Windows/PowerShell, use a versão com `Start-Job` do módulo 05.
 
 Enquanto a carga roda, alterne entre três telas:
 - **Container Insights** (módulo 02): CPU/memória subindo por task.
@@ -109,8 +126,15 @@ Enquanto a carga roda, alterne entre três telas:
 
 ### 7. Confirmar o e-mail de alarme
 
+> ⚠️ **Isso pode demorar de 5 a 15 minutos**, mesmo com a CPU já
+> visivelmente alta — as métricas do namespace `AWS/ECS` são publicadas
+> com atraso, e o Alarme avalia sobre esse fluxo atrasado. Continue
+> gerando carga (repita o Terminal 2) até o e-mail chegar; não é sinal
+> de erro (veja o módulo 06 para mais detalhes).
+
 Deve chegar um e-mail da AWS quando o estado virar `ALARM`. Pare a
-carga (`Ctrl+C`) e espere o segundo e-mail, de volta pra `OK`.
+carga (`Ctrl+C` / feche o Terminal 2) e espere o segundo e-mail, de
+volta pra `OK` (esse costuma chegar mais rápido).
 
 ### 8. Consultar os logs do período de carga
 

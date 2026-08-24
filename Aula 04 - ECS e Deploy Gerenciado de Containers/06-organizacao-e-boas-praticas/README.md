@@ -32,6 +32,15 @@ aws logs tail /ecs/aula04-api --follow
 aws elbv2 describe-target-health --target-group-arn <arn-do-target-group>
 ```
 
+> ⚠️ **No Git Bash (Windows), comandos com um caminho começando em `/`**
+> (como `/ecs/aula04-api` acima) **às vezes são "traduzidos" pelo Git
+> Bash** para um caminho de arquivo do Windows antes de chegar na AWS
+> CLI — o comando falha com um erro estranho, tipo `not authorized to
+> perform ... on resources /Program Files/Git/ecs/aula04-api`. Se isso
+> acontecer, rode o comando prefixado com
+> `MSYS_NO_PATHCONV=1 aws logs tail /ecs/aula04-api --follow` (ou troque
+> pra PowerShell, que não tem esse comportamento).
+
 ---
 
 ## 🐛 Troubleshooting comum

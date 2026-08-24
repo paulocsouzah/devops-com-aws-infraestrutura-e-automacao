@@ -157,23 +157,71 @@ Confirmation"**. Abra ela e clique em **"Confirm subscription"**.
 
 ## 🧪 Passo 4 — Provocar o alarme de propósito
 
-Reaproveite o `dashboard.js` da Aula 04 (módulo 05, Auto Scaling) pra
-gerar carga real de CPU na api:
+Você vai usar **dois terminais ao mesmo tempo**: um pra visualizar (o
+`dashboard.js` da Aula 04), outro pra garantir que a CPU realmente
+passa de 70% — o `dashboard.js` sozinho, no ritmo padrão dele, é
+suficiente pra demonstrar o Load Balancing e o Auto Scaling (Aula 04),
+mas gera CPU de menos pra empurrar o alarme desta aula com confiança.
+
+### Terminal 1 — visualização (opcional, mas recomendado)
 
 ```bash
 node dashboard.js <alb_dns_name> aula06-cluster aula06-api
 ```
 
-Deixe rodando por alguns minutos — o objetivo aqui não é o Auto Scaling
-(embora ele também vá reagir), é a CPU passar de 70% por tempo
-suficiente pro Alarme mudar de estado.
+Deixe rodando — é ele que mostra, ao vivo, as respostas por task e o
+`desiredCount`/`runningCount` do Service.
 
-Acompanhe o estado do alarme:
+### Terminal 2 — geração de carga garantida
+
+Pegue o `alb_dns_name` (`terraform output alb_dns_name`) e rode:
+
+**Windows (PowerShell):**
+```powershell
+$alb = "<alb_dns_name>"
+for ($onda = 1; $onda -le 10; $onda++) {
+  for ($i = 1; $i -le 40; $i++) {
+    Start-Job -ScriptBlock {
+      param($url) Invoke-WebRequest -Uri $url -UseBasicParsing | Out-Null
+    } -ArgumentList "http://$alb/api/stress?duracao_ms=30000" | Out-Null
+  }
+  Start-Sleep -Seconds 10
+}
+```
+
+**Mac/Linux (ou Git Bash no Windows):**
+```bash
+ALB="<alb_dns_name>"
+for onda in $(seq 1 10); do
+  for i in $(seq 1 40); do
+    curl -s "http://$ALB/api/stress?duracao_ms=30000" -o /dev/null &
+  done
+  sleep 10
+done
+```
+
+> 💡 Isso dispara **40 requisições simultâneas** pro endpoint
+> `/api/stress` (Aula 04, módulo 05) a cada 10 segundos, por
+> aproximadamente 100 segundos — volume suficiente pra saturar a CPU de
+> uma task pequena (256 unidades = 0,25 vCPU) de forma sustentada, não
+> só em picos passageiros.
+
+### Acompanhe o estado do alarme
 
 ```bash
 aws cloudwatch describe-alarms --alarm-names aula06-api-cpu-high \
   --query "MetricAlarms[0].{Estado:StateValue,Motivo:StateReason}"
 ```
+
+> ⚠️ **Paciência: o Alarme pode demorar vários minutos pra reagir,
+> mesmo com a CPU já visivelmente alta.** As métricas do namespace
+> `AWS/ECS` são publicadas com atraso, e a avaliação do Alarme roda
+> sobre esse fluxo atrasado — não sobre o dado mais recente que você vê
+> ao consultar direto. Na prática, pode levar entre 5 e 15 minutos
+> entre a CPU cruzar 70% de verdade e o Alarme perceber isso e
+> disparar. **Continue gerando carga** (repita o comando do Terminal 2
+> se a primeira rodada terminar antes do alarme disparar) — não é sinal
+> de que algo está quebrado.
 
 Quando `Estado` virar `ALARM`, confira sua caixa de e-mail — deve
 chegar uma notificação da AWS com os detalhes do alarme. **Tire um
