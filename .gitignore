@@ -10,3 +10,6 @@
 *.pem
 *.ppk
 .aws/
+
+# Gabarito do professor (Aula 07) — nunca vai pro repositorio publico
+/exame-final/

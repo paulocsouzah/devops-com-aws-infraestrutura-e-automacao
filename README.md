@@ -57,12 +57,17 @@ Cada aula é um módulo autocontido, com a seguinte estrutura:
 
 ### 📝 Avaliação
 
-Todas as aulas seguem o **mesmo padrão de entrega**: ao final do exercício
+Da Aula 01 à Aula 06, o padrão de entrega é o mesmo: ao final do exercício
 final, o aluno envia um **relatório em PDF** com prints das evidências,
 comandos executados e respostas às perguntas de reflexão. Esse PDF é o
 material usado para avaliação e lançamento de nota. Os detalhes específicos
 de cada entrega (o que precisa aparecer no PDF, rubrica etc.) estão no
 próprio módulo de exercício final de cada aula.
+
+A **Aula 07** foge desse padrão de propósito: é uma avaliação prática,
+feita ao vivo, em dupla/trio, sem relatório em PDF — a entrega é o link da
+aplicação no ar e uma demonstração ao vivo pro professor. Os detalhes
+(formato, rubrica, prazo) estão no [próprio módulo](<Aula 07 - Projeto Final/README.md>).
 
 ---
 
@@ -85,7 +90,7 @@ devops-com-aws-infraestrutura-e-automacao/
 ├── Aula 04 - ECS e Deploy Gerenciado de Containers/
 ├── Aula 05 - CI-CD com GitHub Actions/
 ├── Aula 06 - Monitoramento e Observabilidade/
-└── Aula 07 - Projeto Integrador/
+└── Aula 07 - Projeto Final/
 ```
 
 ## 📚 Grade do curso
@@ -98,7 +103,7 @@ devops-com-aws-infraestrutura-e-automacao/
 | 4 | [Aula 04 - ECS e Deploy Gerenciado de Containers](<Aula 04 - ECS e Deploy Gerenciado de Containers/README.md>) | Cluster Fargate, Task Definition, Service, ALB e Auto Scaling, por Terraform | ✅ Disponível |
 | 5 | [Aula 05 - CI/CD com GitHub Actions](<Aula 05 - CI-CD com GitHub Actions/README.md>) | Pipeline de build, imagem Docker e deploy automático no ECS | ✅ Disponível |
 | 6 | [Aula 06 - Monitoramento e Observabilidade](<Aula 06 - Monitoramento e Observabilidade/README.md>) | CloudWatch, Container Insights, logs, métricas e alarmes | ✅ Disponível |
-| 7 | Aula 07 - Projeto Integrador | Projeto final integrando todo o conteúdo do módulo | ⏳ Planejada |
+| 7 | [Aula 07 - Projeto Final](<Aula 07 - Projeto Final/README.md>) | Avaliação final: reconstruir toda a infraestrutura em dupla/trio, em aula, com valores próprios | ✅ Disponível |
 
 **Como usar:** siga as aulas na ordem numérica. Dentro de cada aula, siga
 também as subpastas na ordem — cada uma parte do que foi construído na
@@ -238,37 +243,34 @@ produção rodando em containers gerenciados.
 
 ---
 
-### 🎓 Aula 7 — Projeto Integrador
+### 🎓 Aula 7 — Projeto Final (Avaliação)
 
-**Objetivo:** integrar todo o conteúdo aprendido durante o módulo.
+**Objetivo:** avaliar, na prática e em dupla/trio, se o aluno sabe
+reconstruir sozinho tudo que foi ensinado — não seguindo um passo a
+passo com código pronto, mas adaptando o que aprendeu pra valores e
+nomes diferentes dos usados no material.
 
-**Fluxo final**
-1. Desenvolver uma nova funcionalidade.
-2. Realizar commit no GitHub.
-3. Executar automaticamente a pipeline.
-4. Publicar uma nova revisão da Task Definition e atualizar o Service no ECS.
-5. Validar o deploy.
-6. Monitorar os logs e métricas.
-7. Corrigir possíveis problemas.
+**Formato:** atividade prática em sala, com duração de 3 a 4 horas,
+sem relatório em PDF — a entrega é ao vivo: o grupo manda o link da
+aplicação no ar e demonstra o Auto Scaling reagindo a uma carga real,
+enquanto o professor acompanha e avalia.
 
-**Conteúdos complementares**
-- Boas práticas de DevOps
-- Organização de projetos e estrutura de ambientes
-- Segurança e gerenciamento de segredos
-- Custos na AWS
-- Próximos passos para carreira DevOps
+**O que o grupo constrói, do zero, com CIDRs/nomes próprios**
+1. Rede (VPC, subnets, Internet Gateway, Route Table).
+2. Banco de dados gerenciado (RDS MySQL) em subnet privada.
+3. Repositórios ECR, Cluster ECS Fargate, Task Definitions e Services.
+4. Application Load Balancer com roteamento pra frontend e api.
+5. Auto Scaling por CPU nos dois Services.
+6. Pipeline de CI/CD (GitHub Actions) **editado** pra publicar nos
+   recursos novos — a lacuna deixada de propósito na Aula 06 (nomes
+   fixos no `deploy.yml`) volta aqui como parte da prova.
+7. *(Bônus)* Container Insights, Dashboard e Alarme com SNS.
 
-**Projeto final:** ao concluir o módulo, o aluno terá desenvolvido um
-ambiente semelhante ao utilizado em empresas, contendo:
-
-- Infraestrutura criada automaticamente com Terraform.
-- Aplicação containerizada com Docker.
-- Orquestração gerenciada com ECS (Fargate) e Auto Scaling.
-- Deploy automatizado utilizando GitHub Actions.
-- Balanceamento de carga com Application Load Balancer.
-- Monitoramento utilizando CloudWatch.
-- Pipeline completa de CI/CD.
-- Projeto versionado no GitHub seguindo boas práticas de DevOps.
+**Critério de avaliação:** rubrica de 10 pontos (mais 1 ponto de
+bônus), cobrindo cada peça acima, funcionamento real da aplicação sob
+carga e a regra de ouro do curso (nada criado manualmente pelo
+Console). Detalhes completos, tabela de valores obrigatórios e a
+rubrica estão no [material da Aula 07](<Aula 07 - Projeto Final/README.md>).
 
 ---
 
