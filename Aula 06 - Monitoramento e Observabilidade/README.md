@@ -33,6 +33,7 @@ sozinho, e te avisa quando precisar.
 | [05-exercicio-04-alarme-sns](05-exercicio-04-alarme-sns/README.md) | SNS + CloudWatch Alarm: notificação por e-mail quando a CPU da api fica alta |
 | [06-organizacao-e-boas-praticas](06-organizacao-e-boas-praticas/README.md) | Custos de monitoramento, thresholds de alarme, troubleshooting de assinatura SNS |
 | [07-exercicio-final](07-exercicio-final/README.md) | Validação de ponta a ponta: gerar carga real e ver o alarme disparar — entrega em PDF |
+| [08-conteudo-extra](08-conteudo-extra/README.md) | **Opcional, não vale nota:** Prometheus + Grafana numa EC2, monitorando o mesmo ECS/ALB via um `cloudwatch-exporter` |
 
 ## ▶️ Como usar
 
